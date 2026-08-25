@@ -1,0 +1,21 @@
+src/main/kotlin/com/padelaragon/desktop/ui/screen/PlayerDetailScreen.kt
+  s_29da3746bf53bd::t_eb673e8f33d8c5 41
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  s_29da3746bf53bd::t_bc0507aaf15177 67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0ca4f2f42cd3f46ef341463f37eae6bb4226311a",
+  "prompts": {},
+  "sessions": {
+    "s_29da3746bf53bd": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_29da3746bf53bd",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
