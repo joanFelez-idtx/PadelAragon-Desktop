@@ -17,6 +17,13 @@ data class PlayerDetailStats(
     /** Percentage of matches won (0-100), or null if the player has no matches. */
     val winRate: Double?
         get() = if (matches.isEmpty()) null else (matches.count { it.won } * 100.0) / matches.size
+
+    /** Percentage of games won (0-100), or null if the player has no games played. */
+    val gameWinRate: Double?
+        get() {
+            val totalGames = gamesWon + gamesLost
+            return if (totalGames == 0) null else (gamesWon * 100.0) / totalGames
+        }
 }
 
 data class PartnerCount(

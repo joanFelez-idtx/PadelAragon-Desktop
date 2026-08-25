@@ -78,7 +78,7 @@ fun PlayerDetailScreen(
             }
 
             item {
-                GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost)
+                GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost, gameWinRate = stats.gameWinRate)
             }
 
             item {
@@ -130,7 +130,7 @@ private fun MatchesWonLostCard(matchesWon: Int, matchesLost: Int, winRate: Doubl
 }
 
 @Composable
-private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int) {
+private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int, gameWinRate: Double?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -157,6 +157,10 @@ private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int) {
             ) {
                 StatColumn(label = "Ganados", value = gamesWon.toString())
                 StatColumn(label = "Perdidos", value = gamesLost.toString())
+                StatColumn(
+                    label = "% Victorias",
+                    value = gameWinRate?.let { "${it.toInt()}%" } ?: "--"
+                )
             }
         }
     }

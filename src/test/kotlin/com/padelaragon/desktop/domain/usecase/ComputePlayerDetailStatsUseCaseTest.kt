@@ -150,6 +150,32 @@ class ComputePlayerDetailStatsUseCaseTest {
         val stats = useCase(emptyMap(), emptyList(), 1, "Alice")
 
         assertEquals(null, stats.winRate)
+        assertEquals(null, stats.gameWinRate)
+    }
+
+    @Test
+    fun `computes game win rate as percentage of games won`() {
+        val teamId = 1
+        val detail = MatchDetail(
+            pairs = listOf(
+                PairDetail(
+                    pairNumber = 1,
+                    localPlayer1 = "Alice",
+                    localPlayer2 = "Bob",
+                    visitorPlayer1 = "Carol",
+                    visitorPlayer2 = "Dave",
+                    sets = listOf(SetScore(6, 4), SetScore(4, 6), SetScore(6, 0))
+                )
+            )
+        )
+        val playedMatches = listOf(match(jornada = 1, localTeamId = teamId, visitorTeamId = 2, detailUrl = "m1"))
+
+        val stats = useCase(mapOf("m1" to detail), playedMatches, teamId, "Alice")
+
+        // Games won: 6 + 4 + 6 = 16, games lost: 4 + 6 + 0 = 10, total 26
+        assertEquals(16, stats.gamesWon)
+        assertEquals(10, stats.gamesLost)
+        assertEquals(16.0 / 26.0 * 100.0, stats.gameWinRate!!, 0.001)
     }
 
     @Test
