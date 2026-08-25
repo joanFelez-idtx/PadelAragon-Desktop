@@ -2,6 +2,7 @@ package com.padelaragon.desktop.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,6 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.padelaragon.desktop.data.model.MatchDetail
+import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.data.model.Player
 import com.padelaragon.desktop.data.model.StandingRow
 import com.padelaragon.desktop.data.model.TeamDetail
@@ -57,6 +60,7 @@ fun TeamScreen(
     groupId: Int,
     onBack: () -> Unit,
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
+    onPlayerClick: (playerName: String, matchDetails: Map<String, MatchDetail>, playedMatches: List<MatchResult>) -> Unit,
     viewModelFactory: TeamViewModelFactory,
     viewModel: TeamViewModel = viewModel(factory = viewModelFactory)
 ) {
@@ -433,6 +437,9 @@ fun TeamScreen(
                                                     Row(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
+                                                            .clickable {
+                                                                onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
+                                                            }
                                                             .padding(vertical = 2.dp),
                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
