@@ -198,7 +198,10 @@ private fun GroupDetailPanel(
     groupName: String,
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
     viewModelFactory: GroupDetailViewModelFactory,
-    viewModel: GroupDetailViewModel = viewModel(factory = viewModelFactory)
+    viewModel: GroupDetailViewModel = viewModel(
+        key = "group_detail_$groupId",
+        factory = viewModelFactory
+    )
 ) {
     val isFavorite by viewModel.isFavorite.collectAsState()
 
