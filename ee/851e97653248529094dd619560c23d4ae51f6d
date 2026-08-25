@@ -1,0 +1,19 @@
+.github/workflows/check-ssl.yml
+  s_c3f95bb185b521::t_33c0903797e058 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ee851e97653248529094dd619560c23d4ae51f6d",
+  "prompts": {},
+  "sessions": {
+    "s_c3f95bb185b521": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "349169dc-08b0-4ba3-b8f4-a0e35318ee98",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
