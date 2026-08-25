@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,8 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
@@ -81,6 +82,23 @@ fun GroupsMasterDetailScreen(
                 title = {
                     Text(text = "Liga de Aragón 2026", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 },
+                actions = {
+                    IconButton(onClick = listViewModel::refresh, enabled = !isRefreshing) {
+                        if (isRefreshing) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.width(20.dp).height(20.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Refresh,
+                                contentDescription = "Actualizar",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -100,63 +118,57 @@ fun GroupsMasterDetailScreen(
                     .width(300.dp)
                     .fillMaxHeight()
             ) {
-                PullToRefreshBox(
-                    isRefreshing = isRefreshing,
-                    onRefresh = listViewModel::refresh,
+                LoadingErrorWrapper(
+                    isLoading = uiState.isLoading,
+                    error = uiState.error,
+                    onRetry = listViewModel::retry,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    LoadingErrorWrapper(
-                        isLoading = uiState.isLoading,
-                        error = uiState.error,
-                        onRetry = listViewModel::retry,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        val grouped = uiState.groups.groupBy { it.gender }
-                        val favoriteGroups = uiState.groups.filter { it.id in uiState.favoriteIds }
-                        val masculineGroups = grouped[Gender.MASCULINA].orEmpty()
-                        val feminineGroups = grouped[Gender.FEMENINA].orEmpty()
+                val grouped = uiState.groups.groupBy { it.gender }
+                val favoriteGroups = uiState.groups.filter { it.id in uiState.favoriteIds }
+                val masculineGroups = grouped[Gender.MASCULINA].orEmpty()
+                val feminineGroups = grouped[Gender.FEMENINA].orEmpty()
 
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            if (favoriteGroups.isNotEmpty()) {
-                                item(key = "fav_header") {
-                                    SidebarSectionHeader(title = "⭐ FAVORITOS")
-                                }
-                                items(favoriteGroups, key = { "fav_${it.id}" }) { group ->
-                                    SidebarGroupItem(
-                                        group = group,
-                                        isSelected = group.id == selected?.id,
-                                        onClick = { selected = group }
-                                    )
-                                }
-                            }
-
-                            if (masculineGroups.isNotEmpty()) {
-                                item { SidebarSectionHeader(title = "MASCULINA") }
-                                items(masculineGroups, key = { it.id }) { group ->
-                                    SidebarGroupItem(
-                                        group = group,
-                                        isSelected = group.id == selected?.id,
-                                        onClick = { selected = group }
-                                    )
-                                }
-                            }
-
-                            if (feminineGroups.isNotEmpty()) {
-                                item { SidebarSectionHeader(title = "FEMENINA") }
-                                items(feminineGroups, key = { it.id }) { group ->
-                                    SidebarGroupItem(
-                                        group = group,
-                                        isSelected = group.id == selected?.id,
-                                        onClick = { selected = group }
-                                    )
-                                }
-                            }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (favoriteGroups.isNotEmpty()) {
+                        item(key = "fav_header") {
+                            SidebarSectionHeader(title = "⭐ FAVORITOS")
+                        }
+                        items(favoriteGroups, key = { "fav_${it.id}" }) { group ->
+                            SidebarGroupItem(
+                                group = group,
+                                isSelected = group.id == selected?.id,
+                                onClick = { selected = group }
+                            )
                         }
                     }
+
+                    if (masculineGroups.isNotEmpty()) {
+                        item { SidebarSectionHeader(title = "MASCULINA") }
+                        items(masculineGroups, key = { it.id }) { group ->
+                            SidebarGroupItem(
+                                group = group,
+                                isSelected = group.id == selected?.id,
+                                onClick = { selected = group }
+                            )
+                        }
+                    }
+
+                    if (feminineGroups.isNotEmpty()) {
+                        item { SidebarSectionHeader(title = "FEMENINA") }
+                        items(feminineGroups, key = { it.id }) { group ->
+                            SidebarGroupItem(
+                                group = group,
+                                isSelected = group.id == selected?.id,
+                                onClick = { selected = group }
+                            )
+                        }
+                    }
+                }
                 }
             }
 
@@ -204,6 +216,7 @@ private fun GroupDetailPanel(
     )
 ) {
     val isFavorite by viewModel.isFavorite.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxSize()) {
@@ -222,6 +235,21 @@ private fun GroupDetailPanel(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.weight(1f)
                 )
+                IconButton(onClick = viewModel::refresh, enabled = !isRefreshing) {
+                    if (isRefreshing) {
+                        androidx.compose.material3.CircularProgressIndicator(
+                            modifier = Modifier.width(20.dp).height(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Actualizar",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
                 IconButton(onClick = { viewModel.toggleFavorite() }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
