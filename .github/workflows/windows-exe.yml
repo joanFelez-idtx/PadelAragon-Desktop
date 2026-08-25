@@ -1,0 +1,44 @@
+name: Build Windows .exe
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build Windows installers (.exe, .msi)
+        run: .\gradlew.bat packageDistributionForCurrentOS --console=plain
+        shell: pwsh
+
+      - name: Locate installer artifacts
+        id: find
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path build/compose/binaries -Recurse -Filter *.exe | Select-Object -First 1
+          $msi = Get-ChildItem -Path build/compose/binaries -Recurse -Filter *.msi | Select-Object -First 1
+          echo "exe_path=$($exe.FullName)" >> $env:GITHUB_OUTPUT
+          echo "msi_path=$($msi.FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Upload .exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PadelAragon-windows-exe
+          path: build/compose/binaries/main/exe/*.exe
+
+      - name: Upload .msi artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PadelAragon-windows-msi
+          path: build/compose/binaries/main/msi/*.msi

@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+
+# Kotlin
+.kotlin/
+
+# IDE - Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
