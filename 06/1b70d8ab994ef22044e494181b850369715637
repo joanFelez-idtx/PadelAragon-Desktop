@@ -1,0 +1,23 @@
+src/main/kotlin/com/padelaragon/desktop/ui/navigation/AppNavHost.kt
+  s_e3275f5335ec9e::t_a40286e3675ae4 11,22-24,58-60,64-73
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupDetailScreen.kt
+  s_e3275f5335ec9e::t_de5e77102e42d1 86-89,93-122,124-127,129-153,158-177,179-194,199-200
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupsMasterDetailScreen.kt
+  s_e3275f5335ec9e::t_8d8260d239fce3 8-9,13,18,20-21,28-30,34-37,39,46-47,51-57,60-64,66-76,92,97-101,103-106,108-117,119-157,160-161,163-186,194-240,242,250,254,262,264-265,270,272-273,279-281
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "061b70d8ab994ef22044e494181b850369715637",
+  "prompts": {},
+  "sessions": {
+    "s_e3275f5335ec9e": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_e3275f5335ec9e",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
