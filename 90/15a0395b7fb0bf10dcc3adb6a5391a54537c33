@@ -1,0 +1,21 @@
+src/main/kotlin/com/padelaragon/desktop/ui/theme/Color.kt
+  s_148d715bc82a62::t_1b74db2e2672aa 5-13,15-20
+src/main/kotlin/com/padelaragon/desktop/ui/theme/Theme.kt
+  s_148d715bc82a62::t_935d002a827d4c 8-16,18-19,25-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9015a0395b7fb0bf10dcc3adb6a5391a54537c33",
+  "prompts": {},
+  "sessions": {
+    "s_148d715bc82a62": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_148d715bc82a62",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
