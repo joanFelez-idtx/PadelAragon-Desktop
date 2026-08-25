@@ -1,0 +1,19 @@
+build.gradle.kts
+  s_a64794f67552d1::t_dd2de18bd3ab9e 54-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2a21af1569e34e8c1d891310d6e1bf65cbaafdd2",
+  "prompts": {},
+  "sessions": {
+    "s_a64794f67552d1": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_a64794f67552d1",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
