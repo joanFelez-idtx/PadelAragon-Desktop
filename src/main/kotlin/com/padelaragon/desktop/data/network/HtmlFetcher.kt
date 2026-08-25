@@ -10,8 +10,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 import java.nio.charset.Charset
+import java.security.KeyStore
+import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class HtmlFetcher(cacheDir: java.io.File? = null) {
     private val latin1: Charset = Charsets.ISO_8859_1
@@ -141,7 +146,85 @@ class HtmlFetcher(cacheDir: java.io.File? = null) {
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .callTimeout(30, TimeUnit.SECONDS)
 
+            // On Windows, many corporate/managed machines terminate TLS behind a
+            // network proxy whose root CA is only installed in the OS certificate
+            // store (Windows-ROOT), not in the bundled JVM's cacerts. Without this,
+            // requests fail with "PKIX path building failed: unable to find valid
+            // certification path". Build a trust manager that trusts both the JVM's
+            // default CA bundle and the Windows OS trust store, falling back
+            // silently to the JVM default on any other OS.
+            buildWindowsAwareSslSocketFactory()?.let { (sslSocketFactory, trustManager) ->
+                builder.sslSocketFactory(sslSocketFactory, trustManager)
+            }
+
             return builder.build()
         }
+
+        private fun buildWindowsAwareSslSocketFactory(): Pair<javax.net.ssl.SSLSocketFactory, X509TrustManager>? {
+            val isWindows = System.getProperty("os.name")
+                ?.contains("windows", ignoreCase = true) == true
+            if (!isWindows) return null
+
+            return runCatching {
+                fun trustManagersFor(keyStore: KeyStore?): List<X509TrustManager> {
+                    val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                    factory.init(keyStore)
+                    return factory.trustManagers.filterIsInstance<X509TrustManager>()
+                }
+
+                // JVM's bundled cacerts (default trust store).
+                val defaultTrustManagers = trustManagersFor(null)
+
+                // Windows OS certificate store, which includes any corporate/network
+                // root CAs installed via Group Policy or manually by IT.
+                val windowsRootStore = KeyStore.getInstance("Windows-ROOT").apply { load(null, null) }
+                val windowsTrustManagers = trustManagersFor(windowsRootStore)
+
+                val combinedTrustManager = CompositeX509TrustManager(defaultTrustManagers + windowsTrustManagers)
+
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(null, arrayOf(combinedTrustManager), null)
+                sslContext.socketFactory to combinedTrustManager
+            }.onFailure { e ->
+                Logger.e("HtmlFetcher", "Failed to build Windows-aware trust manager, using JVM default", e)
+            }.getOrNull()
+        }
+    }
+
+    /**
+     * Trusts a certificate chain if ANY of the delegate trust managers trust it.
+     * Used to merge the JVM's default CA bundle with the Windows OS trust store.
+     */
+    private class CompositeX509TrustManager(
+        private val delegates: List<X509TrustManager>
+    ) : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<out X509Certificate>, authType: String) {
+            val errors = mutableListOf<Exception>()
+            for (delegate in delegates) {
+                try {
+                    delegate.checkClientTrusted(chain, authType)
+                    return
+                } catch (e: Exception) {
+                    errors += e
+                }
+            }
+            throw errors.lastOrNull() ?: SecurityException("No trust manager trusted this client certificate")
+        }
+
+        override fun checkServerTrusted(chain: Array<out X509Certificate>, authType: String) {
+            val errors = mutableListOf<Exception>()
+            for (delegate in delegates) {
+                try {
+                    delegate.checkServerTrusted(chain, authType)
+                    return
+                } catch (e: Exception) {
+                    errors += e
+                }
+            }
+            throw errors.lastOrNull() ?: SecurityException("No trust manager trusted this server certificate")
+        }
+
+        override fun getAcceptedIssuers(): Array<X509Certificate> =
+            delegates.flatMap { it.acceptedIssuers.toList() }.toTypedArray()
     }
 }
