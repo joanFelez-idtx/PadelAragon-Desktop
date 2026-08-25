@@ -67,6 +67,7 @@ fun GroupsMasterDetailScreen(
     val uiState by listViewModel.uiState.collectAsState()
     val isRefreshing by listViewModel.isRefreshing.collectAsState()
     var selected by remember { androidx.compose.runtime.mutableStateOf<LeagueGroup?>(null) }
+    var detailRefresh: (() -> Unit)? by remember { androidx.compose.runtime.mutableStateOf(null) }
 
     // Default to the first available group (favorites first) once groups load.
     androidx.compose.runtime.LaunchedEffect(uiState.groups, uiState.favoriteIds) {
@@ -83,7 +84,13 @@ fun GroupsMasterDetailScreen(
                     Text(text = "Liga de Aragón 2026", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 },
                 actions = {
-                    IconButton(onClick = listViewModel::refresh, enabled = !isRefreshing) {
+                    IconButton(
+                        onClick = {
+                            listViewModel.refresh()
+                            detailRefresh?.invoke()
+                        },
+                        enabled = !isRefreshing
+                    ) {
                         if (isRefreshing) {
                             androidx.compose.material3.CircularProgressIndicator(
                                 modifier = Modifier.width(20.dp).height(20.dp),
@@ -194,7 +201,8 @@ fun GroupsMasterDetailScreen(
                             groupId = currentGroup.id,
                             groupName = currentGroup.name,
                             onTeamClick = onTeamClick,
-                            viewModelFactory = groupDetailViewModelFactory(currentGroup.id, currentGroup.name)
+                            viewModelFactory = groupDetailViewModelFactory(currentGroup.id, currentGroup.name),
+                            onRefreshAvailable = { refreshFn -> detailRefresh = refreshFn }
                         )
                     }
                 }
@@ -210,13 +218,17 @@ private fun GroupDetailPanel(
     groupName: String,
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
     viewModelFactory: GroupDetailViewModelFactory,
+    onRefreshAvailable: (() -> Unit) -> Unit = {},
     viewModel: GroupDetailViewModel = viewModel(
         key = "group_detail_$groupId",
         factory = viewModelFactory
     )
 ) {
     val isFavorite by viewModel.isFavorite.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(viewModel) {
+        onRefreshAvailable(viewModel::refresh)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxSize()) {
@@ -235,21 +247,6 @@ private fun GroupDetailPanel(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.weight(1f)
                 )
-                IconButton(onClick = viewModel::refresh, enabled = !isRefreshing) {
-                    if (isRefreshing) {
-                        androidx.compose.material3.CircularProgressIndicator(
-                            modifier = Modifier.width(20.dp).height(20.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "Actualizar",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
                 IconButton(onClick = { viewModel.toggleFavorite() }) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
