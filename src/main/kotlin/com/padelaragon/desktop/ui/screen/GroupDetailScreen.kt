@@ -55,11 +55,7 @@ fun GroupDetailScreen(
     viewModelFactory: GroupDetailViewModelFactory,
     viewModel: GroupDetailViewModel = viewModel(factory = viewModelFactory)
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isFavorite by viewModel.isFavorite.collectAsState()
-    val tabs = listOf("Clasificación", "Resultados")
-    var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -87,94 +83,121 @@ fun GroupDetailScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = viewModel::refresh,
+        GroupDetailContent(
+            groupId = groupId,
+            onTeamClick = onTeamClick,
+            viewModel = viewModel,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+        )
+    }
+}
+
+/**
+ * Reusable group-detail content (tabs + standings/results) without its own
+ * Scaffold/TopAppBar/back button. Used both by [GroupDetailScreen] (full-screen,
+ * for mobile-style navigation) and by the desktop master-detail layout where
+ * this is embedded directly in the main panel next to a persistent sidebar.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GroupDetailContent(
+    groupId: Int,
+    onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
+    viewModel: GroupDetailViewModel,
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val tabs = listOf("Clasificación", "Resultados")
+    var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = viewModel::refresh,
+        modifier = modifier
+    ) {
+        androidx.compose.foundation.layout.Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            androidx.compose.foundation.layout.Column(
-                modifier = Modifier.fillMaxSize()
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
-                TabRow(
-                    selectedTabIndex = selectedTabIndex,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            text = { Text(title, color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(title, color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+                }
+            }
+
+            when (selectedTabIndex) {
+                0 -> {
+                    LoadingErrorWrapper(
+                        isLoading = uiState.isLoadingStandings,
+                        error = uiState.standingsError,
+                        onRetry = viewModel::retryStandings,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp)
+                    ) {
+                        StandingsTable(
+                            standings = uiState.standings,
+                            modifier = Modifier.fillMaxSize(),
+                            onTeamClick = { teamId, teamName ->
+                                onTeamClick(teamId, teamName, groupId)
+                            }
                         )
                     }
                 }
 
-                when (selectedTabIndex) {
-                    0 -> {
-                        LoadingErrorWrapper(
-                            isLoading = uiState.isLoadingStandings,
-                            error = uiState.standingsError,
-                            onRetry = viewModel::retryStandings,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(12.dp)
-                        ) {
-                            StandingsTable(
-                                standings = uiState.standings,
-                                modifier = Modifier.fillMaxSize(),
-                                onTeamClick = { teamId, teamName ->
-                                    onTeamClick(teamId, teamName, groupId)
+                else -> {
+                    ResultsTabContent(
+                        jornadas = uiState.jornadas,
+                        selectedJornada = uiState.selectedJornada,
+                        isLoading = uiState.isLoadingResults,
+                        error = uiState.resultsError,
+                        onSelectJornada = viewModel::selectJornada,
+                        onRetry = viewModel::retryResults,
+                        modifier = Modifier.fillMaxSize(),
+                        content = {
+                            if ((uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()).isEmpty()) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Sin resultados",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
-                            )
-                        }
-                    }
-
-                    else -> {
-                        ResultsTabContent(
-                            jornadas = uiState.jornadas,
-                            selectedJornada = uiState.selectedJornada,
-                            isLoading = uiState.isLoadingResults,
-                            error = uiState.resultsError,
-                            onSelectJornada = viewModel::selectJornada,
-                            onRetry = viewModel::retryResults,
-                            modifier = Modifier.fillMaxSize(),
-                            content = {
-                                if ((uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()).isEmpty()) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "Sin resultados",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(bottom = 12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    items(uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()) { match ->
+                                        MatchCard(
+                                            match = match,
+                                            modifier = Modifier.padding(horizontal = 12.dp),
+                                            detail = match.detailUrl?.let { uiState.matchDetails[it] },
+                                            isLoadingDetail = match.detailUrl in uiState.loadingMatchDetails,
+                                            onToggleDetail = match.detailUrl?.let { url -> { viewModel.loadMatchDetail(url) } },
+                                            onTeamClick = { teamId, teamName ->
+                                                onTeamClick(teamId, teamName, groupId)
+                                            }
                                         )
-                                    }
-                                } else {
-                                    LazyColumn(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentPadding = PaddingValues(bottom = 12.dp),
-                                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        items(uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()) { match ->
-                                            MatchCard(
-                                                match = match,
-                                                modifier = Modifier.padding(horizontal = 12.dp),
-                                                detail = match.detailUrl?.let { uiState.matchDetails[it] },
-                                                isLoadingDetail = match.detailUrl in uiState.loadingMatchDetails,
-                                                onToggleDetail = match.detailUrl?.let { url -> { viewModel.loadMatchDetail(url) } },
-                                                onTeamClick = { teamId, teamName ->
-                                                    onTeamClick(teamId, teamName, groupId)
-                                                }
-                                            )
-                                        }
                                     }
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         }

@@ -8,8 +8,7 @@ import androidx.compose.runtime.setValue
 import com.padelaragon.desktop.data.model.MatchDetail
 import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.di.AppContainer
-import com.padelaragon.desktop.ui.screen.GroupDetailScreen
-import com.padelaragon.desktop.ui.screen.GroupListScreen
+import com.padelaragon.desktop.ui.screen.GroupsMasterDetailScreen
 import com.padelaragon.desktop.ui.screen.PlayerDetailScreen
 import com.padelaragon.desktop.ui.screen.TeamScreen
 import com.padelaragon.desktop.ui.viewmodel.GroupDetailViewModelFactory
@@ -20,11 +19,12 @@ import com.padelaragon.desktop.ui.viewmodel.TeamViewModelFactory
 /**
  * Desktop replacement for the Android NavGraph (androidx.navigation-compose).
  * Uses a simple in-memory back stack of screen destinations instead, since
- * this app only has a few linear destinations (groups -> group -> team -> player).
+ * this app only has a few linear destinations (groups -> team -> player).
+ * The Groups + GroupDetail flow is combined into a single master-detail
+ * destination (persistent left sidebar of categories + main panel), desktop-only.
  */
 private sealed class Destination {
     data object Groups : Destination()
-    data class GroupDetail(val groupId: Int, val groupName: String) : Destination()
     data class TeamDetail(val teamId: Int, val teamName: String, val groupId: Int) : Destination()
     data class PlayerDetail(
         val playerName: String,
@@ -55,29 +55,22 @@ fun AppNavHost(container: AppContainer) {
 
     when (val destination = current) {
         is Destination.Groups -> {
-            GroupListScreen(
-                onGroupClick = { groupId, groupName -> push(Destination.GroupDetail(groupId, groupName)) },
-                viewModelFactory = GroupListViewModelFactory(
+            GroupsMasterDetailScreen(
+                onTeamClick = navigateToTeam,
+                listViewModelFactory = GroupListViewModelFactory(
                     container.groupDataSource,
                     container.favoritesDataSource,
                     container.prefetchGroupsUseCase
-                )
-            )
-        }
-
-        is Destination.GroupDetail -> {
-            GroupDetailScreen(
-                groupId = destination.groupId,
-                groupName = destination.groupName,
-                onBack = { pop() },
-                onTeamClick = navigateToTeam,
-                viewModelFactory = GroupDetailViewModelFactory(
-                    destination.groupId, destination.groupName,
-                    container.standingsDataSource,
-                    container.matchResultDataSource,
-                    container.matchDetailDataSource,
-                    container.favoritesDataSource
-                )
+                ),
+                groupDetailViewModelFactory = { groupId, groupName ->
+                    GroupDetailViewModelFactory(
+                        groupId, groupName,
+                        container.standingsDataSource,
+                        container.matchResultDataSource,
+                        container.matchDetailDataSource,
+                        container.favoritesDataSource
+                    )
+                }
             )
         }
 
