@@ -1,0 +1,19 @@
+src/main/kotlin/com/padelaragon/desktop/data/network/HtmlFetcher.kt
+  s_8ae9623f0c44b7::t_359a6656eb7905 13-14,16,18-19,149-159,162-228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "85286b073c7dbfda023e123846d4b8d61c197fc4",
+  "prompts": {},
+  "sessions": {
+    "s_8ae9623f0c44b7": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_8ae9623f0c44b7",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
