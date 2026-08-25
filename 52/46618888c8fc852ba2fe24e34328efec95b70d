@@ -1,0 +1,33 @@
+src/main/resources/certs/itx-root-ca.pem
+  s_c3f95bb185b521::t_2feece9a475721 1-34
+src/main/resources/certs/itx-ssl-proxy-intermediate.pem
+  s_c3f95bb185b521::t_a5728db51cb850 1-29
+build.gradle.kts
+  s_c3f95bb185b521::t_4c0e4123520106 50-52
+src/main/kotlin/com/padelaragon/desktop/data/model/PlayerDetailStats.kt
+  s_c3f95bb185b521::t_61a7821e842edd 11-12,19-34
+src/main/kotlin/com/padelaragon/desktop/data/network/HtmlFetcher.kt
+  s_c3f95bb185b521::t_84c1b8b9807b5d 14,121-132,162-173,180-196,198,206-207,210-237,239-240,246
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/ComputePlayerDetailStatsUseCase.kt
+  s_c3f95bb185b521::t_2b126a206948d4 7,27,32,44-45,48-49,51-52,55-56,64-78,91-92
+src/main/kotlin/com/padelaragon/desktop/ui/screen/PlayerDetailScreen.kt
+  s_c3f95bb185b521::t_35d77eed3b7764 31,83-86,208-325
+src/test/kotlin/com/padelaragon/desktop/domain/usecase/ComputePlayerDetailStatsUseCaseTest.kt
+  s_c3f95bb185b521::t_4980db6e62e56b 52-62,88-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5246618888c8fc852ba2fe24e34328efec95b70d",
+  "prompts": {},
+  "sessions": {
+    "s_c3f95bb185b521": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "349169dc-08b0-4ba3-b8f4-a0e35318ee98",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
