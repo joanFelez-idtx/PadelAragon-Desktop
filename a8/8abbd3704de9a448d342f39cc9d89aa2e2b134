@@ -1,0 +1,19 @@
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupsMasterDetailScreen.kt
+  s_57447749ae3957::t_def94bad1a0bb5 70,87-93,204-205,221,228-231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a88abbd3704de9a448d342f39cc9d89aa2e2b134",
+  "prompts": {},
+  "sessions": {
+    "s_57447749ae3957": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_57447749ae3957",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
