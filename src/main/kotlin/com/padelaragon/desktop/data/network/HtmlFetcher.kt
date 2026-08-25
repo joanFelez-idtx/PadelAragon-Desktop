@@ -11,6 +11,7 @@ import okhttp3.Request
 import java.io.IOException
 import java.nio.charset.Charset
 import java.security.KeyStore
+import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
@@ -117,6 +118,18 @@ class HtmlFetcher(cacheDir: java.io.File? = null) {
 
         private val connectionPool = ConnectionPool(15, 2, TimeUnit.MINUTES)
 
+        /**
+         * Extra root/intermediate CA certificates (PEM) bundled as app resources so
+         * they're trusted regardless of OS or how the app is run (native, or under
+         * Wine/Bottles, which does not expose the real Windows certificate store).
+         * Add more .pem files under src/main/resources/certs/ as needed.
+         */
+        private const val BUNDLED_CERTS_RESOURCE_DIR = "/certs/"
+        private val BUNDLED_CERT_FILES = listOf(
+            "itx-root-ca.pem",
+            "itx-ssl-proxy-intermediate.pem"
+        )
+
         val sharedClient: OkHttpClient = buildClient()
 
         /**
@@ -146,25 +159,43 @@ class HtmlFetcher(cacheDir: java.io.File? = null) {
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .callTimeout(30, TimeUnit.SECONDS)
 
-            // On Windows, many corporate/managed machines terminate TLS behind a
-            // network proxy whose root CA is only installed in the OS certificate
-            // store (Windows-ROOT), not in the bundled JVM's cacerts. Without this,
-            // requests fail with "PKIX path building failed: unable to find valid
-            // certification path". Build a trust manager that trusts both the JVM's
-            // default CA bundle and the Windows OS trust store, falling back
-            // silently to the JVM default on any other OS.
-            buildWindowsAwareSslSocketFactory()?.let { (sslSocketFactory, trustManager) ->
+            // Some networks (e.g. corporate VPNs/proxies) perform TLS inspection on
+            // padelfederacion.es, re-signing its certificate with a private root CA
+            // that is trusted by the OS (via Group Policy/manual install) but NOT by
+            // the JVM's own cacerts bundle - causing "PKIX path building failed" even
+            // though the connection itself succeeds. This affects every environment
+            // equally (Linux, real Windows, and Windows-via-Wine/Bottles), since it's
+            // about which network the app is currently connected through, not the OS.
+            // We build a trust manager that trusts the JVM's default CA bundle PLUS
+            // any bundled extra roots (see BUNDLED_EXTRA_ROOTS) PLUS, on Windows only,
+            // the OS certificate store - covering all known causes without weakening
+            // validation against unknown/untrusted certificates.
+            buildAugmentedSslSocketFactory()?.let { (sslSocketFactory, trustManager) ->
                 builder.sslSocketFactory(sslSocketFactory, trustManager)
             }
 
             return builder.build()
         }
 
-        private fun buildWindowsAwareSslSocketFactory(): Pair<javax.net.ssl.SSLSocketFactory, X509TrustManager>? {
-            val isWindows = System.getProperty("os.name")
-                ?.contains("windows", ignoreCase = true) == true
-            if (!isWindows) return null
+        /**
+         * Extra root/intermediate CA certificates (PEM) bundled as app resources so
+         * they're trusted regardless of OS or how the app is run (native, or under
+         * Wine/Bottles, which does not expose the real Windows certificate store).
+         * Add more .pem files under src/main/resources/certs/ as needed.
+         */
+        private fun loadBundledCertificates(): List<X509Certificate> {
+            val certFactory = CertificateFactory.getInstance("X.509")
+            return BUNDLED_CERT_FILES.mapNotNull { fileName ->
+                runCatching {
+                    HtmlFetcher::class.java.getResourceAsStream("$BUNDLED_CERTS_RESOURCE_DIR$fileName")
+                        ?.use { certFactory.generateCertificate(it) as X509Certificate }
+                }.onFailure { e ->
+                    Logger.e("HtmlFetcher", "Failed to load bundled certificate $fileName", e)
+                }.getOrNull()
+            }
+        }
 
+        private fun buildAugmentedSslSocketFactory(): Pair<javax.net.ssl.SSLSocketFactory, X509TrustManager>? {
             return runCatching {
                 fun trustManagersFor(keyStore: KeyStore?): List<X509TrustManager> {
                     val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
@@ -172,21 +203,47 @@ class HtmlFetcher(cacheDir: java.io.File? = null) {
                     return factory.trustManagers.filterIsInstance<X509TrustManager>()
                 }
 
-                // JVM's bundled cacerts (default trust store).
+                // JVM's bundled cacerts (default trust store) - covers the normal
+                // public-CA case (e.g. Let's Encrypt) with no network interception.
                 val defaultTrustManagers = trustManagersFor(null)
 
-                // Windows OS certificate store, which includes any corporate/network
-                // root CAs installed via Group Policy or manually by IT.
-                val windowsRootStore = KeyStore.getInstance("Windows-ROOT").apply { load(null, null) }
-                val windowsTrustManagers = trustManagersFor(windowsRootStore)
+                // Extra CAs bundled with the app (e.g. corporate TLS-inspection roots
+                // known to intercept padelfederacion.es on some networks).
+                val bundledCerts = loadBundledCertificates()
+                val bundledTrustManagers = if (bundledCerts.isNotEmpty()) {
+                    val bundledStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply {
+                        load(null, null)
+                        bundledCerts.forEachIndexed { index, cert ->
+                            setCertificateEntry("bundled-$index", cert)
+                        }
+                    }
+                    trustManagersFor(bundledStore)
+                } else {
+                    emptyList()
+                }
 
-                val combinedTrustManager = CompositeX509TrustManager(defaultTrustManagers + windowsTrustManagers)
+                // On Windows, also trust the OS certificate store (covers other
+                // corporate/network root CAs installed via Group Policy or IT, when
+                // running as a native Windows build rather than under Wine/Bottles).
+                val isWindows = System.getProperty("os.name")
+                    ?.contains("windows", ignoreCase = true) == true
+                val windowsTrustManagers = if (isWindows) {
+                    runCatching {
+                        val windowsRootStore = KeyStore.getInstance("Windows-ROOT").apply { load(null, null) }
+                        trustManagersFor(windowsRootStore)
+                    }.getOrElse { emptyList() }
+                } else {
+                    emptyList()
+                }
+
+                val allTrustManagers = defaultTrustManagers + bundledTrustManagers + windowsTrustManagers
+                val combinedTrustManager = CompositeX509TrustManager(allTrustManagers)
 
                 val sslContext = SSLContext.getInstance("TLS")
                 sslContext.init(null, arrayOf(combinedTrustManager), null)
                 sslContext.socketFactory to combinedTrustManager
             }.onFailure { e ->
-                Logger.e("HtmlFetcher", "Failed to build Windows-aware trust manager, using JVM default", e)
+                Logger.e("HtmlFetcher", "Failed to build augmented trust manager, using JVM default", e)
             }.getOrNull()
         }
     }

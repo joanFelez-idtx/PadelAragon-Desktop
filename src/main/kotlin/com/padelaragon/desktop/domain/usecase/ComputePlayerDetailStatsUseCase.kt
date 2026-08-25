@@ -4,6 +4,7 @@ import com.padelaragon.desktop.data.model.MatchDetail
 import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.data.model.PartnerCount
 import com.padelaragon.desktop.data.model.PlayerDetailStats
+import com.padelaragon.desktop.data.model.PlayerMatchRecord
 
 /**
  * Desktop-only use case: computes total games won/lost and the top 3 most
@@ -23,10 +24,12 @@ class ComputePlayerDetailStatsUseCase {
         var gamesLost = 0
         val partnerCounts = mutableMapOf<String, Int>()
         val partnerDisplayNames = mutableMapOf<String, String>()
+        val matches = mutableListOf<PlayerMatchRecord>()
 
         for (match in playedMatches) {
             val detail = allDetails[match.detailUrl] ?: continue
             val isLocal = match.localTeamId == teamId
+            val opponentTeam = if (isLocal) match.visitorTeam else match.localTeam
 
             for (pair in detail.pairs) {
                 if (pair.sets.isEmpty()) continue
@@ -38,15 +41,19 @@ class ComputePlayerDetailStatsUseCase {
                 val isPlayer2 = player2.trim().lowercase() == targetKey
                 if (!isPlayer1 && !isPlayer2) continue
 
+                var pairGamesWon = 0
+                var pairGamesLost = 0
                 for (set in pair.sets) {
                     if (isLocal) {
-                        gamesWon += set.localScore
-                        gamesLost += set.visitorScore
+                        pairGamesWon += set.localScore
+                        pairGamesLost += set.visitorScore
                     } else {
-                        gamesWon += set.visitorScore
-                        gamesLost += set.localScore
+                        pairGamesWon += set.visitorScore
+                        pairGamesLost += set.localScore
                     }
                 }
+                gamesWon += pairGamesWon
+                gamesLost += pairGamesLost
 
                 val partnerName = (if (isPlayer1) player2 else player1).trim()
                 if (partnerName.isNotEmpty()) {
@@ -54,6 +61,21 @@ class ComputePlayerDetailStatsUseCase {
                     partnerCounts[key] = (partnerCounts[key] ?: 0) + 1
                     partnerDisplayNames.putIfAbsent(key, partnerName)
                 }
+
+                val opponentPlayer1 = if (isLocal) pair.visitorPlayer1 else pair.localPlayer1
+                val opponentPlayer2 = if (isLocal) pair.visitorPlayer2 else pair.localPlayer2
+
+                matches += PlayerMatchRecord(
+                    jornada = match.jornada,
+                    date = match.date,
+                    partnerName = partnerName,
+                    opponentTeam = opponentTeam,
+                    opponentPlayer1 = opponentPlayer1,
+                    opponentPlayer2 = opponentPlayer2,
+                    gamesWon = pairGamesWon,
+                    gamesLost = pairGamesLost,
+                    won = pairGamesWon > pairGamesLost
+                )
             }
         }
 
@@ -66,7 +88,8 @@ class ComputePlayerDetailStatsUseCase {
             name = playerName,
             gamesWon = gamesWon,
             gamesLost = gamesLost,
-            topPartners = topPartners
+            topPartners = topPartners,
+            matches = matches.sortedByDescending { it.jornada }
         )
     }
 }

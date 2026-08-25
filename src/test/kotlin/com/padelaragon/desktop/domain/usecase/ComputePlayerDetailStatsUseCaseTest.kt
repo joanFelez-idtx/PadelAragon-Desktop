@@ -49,6 +49,17 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals(1, stats.topPartners.size)
         assertEquals("Bob", stats.topPartners.first().name)
         assertEquals(1, stats.topPartners.first().matchesTogether)
+
+        assertEquals(1, stats.matches.size)
+        val record = stats.matches.first()
+        assertEquals(1, record.jornada)
+        assertEquals("Bob", record.partnerName)
+        assertEquals("Visitor", record.opponentTeam)
+        assertEquals("Carol", record.opponentPlayer1)
+        assertEquals("Dave", record.opponentPlayer2)
+        assertEquals(15, record.gamesWon)
+        assertEquals(12, record.gamesLost)
+        assertEquals(true, record.won)
     }
 
     @Test
@@ -74,6 +85,48 @@ class ComputePlayerDetailStatsUseCaseTest {
         // Alice is on the visitor side, so games won/lost should use the visitor score column.
         assertEquals(10, stats.gamesWon) // 4 + 6
         assertEquals(9, stats.gamesLost) // 6 + 3
+
+        assertEquals(1, stats.matches.size)
+        val record = stats.matches.first()
+        assertEquals("Bob", record.partnerName)
+        assertEquals("Local", record.opponentTeam)
+        assertEquals("Carol", record.opponentPlayer1)
+        assertEquals("Dave", record.opponentPlayer2)
+        assertEquals(10, record.gamesWon)
+        assertEquals(9, record.gamesLost)
+        assertEquals(true, record.won)
+    }
+
+    @Test
+    fun `orders match history by most recent jornada first`() {
+        val teamId = 1
+        fun detailForJornada() = MatchDetail(
+            pairs = listOf(
+                PairDetail(
+                    pairNumber = 1,
+                    localPlayer1 = "Alice",
+                    localPlayer2 = "Bob",
+                    visitorPlayer1 = "X",
+                    visitorPlayer2 = "Y",
+                    sets = listOf(SetScore(6, 0))
+                )
+            )
+        )
+
+        val allDetails = mapOf(
+            "m1" to detailForJornada(),
+            "m2" to detailForJornada(),
+            "m3" to detailForJornada()
+        )
+        val playedMatches = listOf(
+            match(jornada = 1, localTeamId = teamId, visitorTeamId = 99, detailUrl = "m1"),
+            match(jornada = 3, localTeamId = teamId, visitorTeamId = 99, detailUrl = "m3"),
+            match(jornada = 2, localTeamId = teamId, visitorTeamId = 99, detailUrl = "m2")
+        )
+
+        val stats = useCase(allDetails, playedMatches, teamId, "Alice")
+
+        assertEquals(listOf(3, 2, 1), stats.matches.map { it.jornada })
     }
 
     @Test
