@@ -38,7 +38,7 @@ fun PlayerDetailScreen(
     playerName: String,
     onBack: () -> Unit,
     viewModelFactory: PlayerDetailViewModelFactory,
-    viewModel: PlayerDetailViewModel = viewModel(factory = viewModelFactory)
+    viewModel: PlayerDetailViewModel = viewModel(key = "player_$playerName", factory = viewModelFactory)
 ) {
     val stats = viewModel.stats
 
