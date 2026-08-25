@@ -1,0 +1,25 @@
+src/main/kotlin/com/padelaragon/desktop/data/model/PlayerDetailStats.kt
+  s_e3acf7423b98f1::t_972a6f9ac1f501 4-5,9-10,24-31,43
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/ComputePlayerDetailStatsUseCase.kt
+  s_e3acf7423b98f1::t_62dfe8dc9c3647 8,11,24-25,45-47,49-52,54-55,74-75,87-88
+src/main/kotlin/com/padelaragon/desktop/ui/screen/PlayerDetailScreen.kt
+  s_e3acf7423b98f1::t_26e68a9ee9a28f 77,92,108,117-118,323
+src/test/kotlin/com/padelaragon/desktop/domain/usecase/ComputePlayerDetailStatsUseCaseTest.kt
+  s_e3acf7423b98f1::t_f978bcf3ed2730 47-48,60,77,86-87,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9dffa02f98a434f6754b1fa535a6444aabcb4c71",
+  "prompts": {},
+  "sessions": {
+    "s_e3acf7423b98f1": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_e3acf7423b98f1",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
