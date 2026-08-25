@@ -1,0 +1,167 @@
+gradle/wrapper/gradle-wrapper.properties
+  s_c3f95bb185b521::t_8b22eca95ea312 1-7
+gradlew
+  s_c3f95bb185b521::t_9966b1e697060d 1-251
+gradlew.bat
+  s_c3f95bb185b521::t_a00ce159c3ac4f 1-94
+src/main/kotlin/com/padelaragon/desktop/data/local/AppDatabase.kt
+  s_acd563765995c0::t_8b0c51e24278c9 1-69
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/CacheTimestampDao.kt
+  s_c3f95bb185b521::t_831495b50c100c 1-22
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/JornadaDao.kt
+  s_c3f95bb185b521::t_4f295e5f53e652 1-19
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/LeagueGroupDao.kt
+  s_c3f95bb185b521::t_cc7c3db6bb4712 1-19
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/MatchDetailDao.kt
+  s_c3f95bb185b521::t_20bdd91e8f8de3 1-19
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/MatchResultDao.kt
+  s_c3f95bb185b521::t_8ff19d642255c3 1-25
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/StandingRowDao.kt
+  s_c3f95bb185b521::t_0bbf2f25c07ea5 1-19
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/TeamDetailDao.kt
+  s_c3f95bb185b521::t_ebfc86d76c52e0 1-34
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/CacheTimestamp.kt
+  s_c3f95bb185b521::t_f76881530d3a4d 1-10
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/JornadaEntity.kt
+  s_c3f95bb185b521::t_1c46e038d8a155 1-9
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/LeagueGroupEntity.kt
+  s_c3f95bb185b521::t_0f837827d0564e 1-33
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/MatchDetailPairEntity.kt
+  s_c3f95bb185b521::t_81871c87087bf5 1-51
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/MatchResultEntity.kt
+  s_c3f95bb185b521::t_f78fc912d6fd55 1-48
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/PlayerEntity.kt
+  s_c3f95bb185b521::t_b71fd9778b768b 1-30
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/StandingRowEntity.kt
+  s_c3f95bb185b521::t_8aedeb27c8a734 1-60
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/TeamDetailEntity.kt
+  s_c3f95bb185b521::t_427c43e169632b 1-11
+src/main/kotlin/com/padelaragon/desktop/data/model/LeagueGroup.kt
+  s_c3f95bb185b521::t_5e650cb59193db 1-11
+src/main/kotlin/com/padelaragon/desktop/data/model/MatchDetail.kt
+  s_c3f95bb185b521::t_9b9e68b406250e 1-19
+src/main/kotlin/com/padelaragon/desktop/data/model/MatchResult.kt
+  s_c3f95bb185b521::t_309f98af7d738b 1-14
+src/main/kotlin/com/padelaragon/desktop/data/model/PlayerStats.kt
+  s_c3f95bb185b521::t_d447587d7bc76b 1-10
+src/main/kotlin/com/padelaragon/desktop/data/model/StandingRow.kt
+  s_c3f95bb185b521::t_6bc431e5a37e73 1-18
+src/main/kotlin/com/padelaragon/desktop/data/model/TeamDetail.kt
+  s_c3f95bb185b521::t_8f6be15ebe966e 1-22
+src/main/kotlin/com/padelaragon/desktop/data/model/TeamInfo.kt
+  s_c3f95bb185b521::t_e49ca7e8e28895 1-14
+src/main/kotlin/com/padelaragon/desktop/data/parser/GroupParser.kt
+  s_c3f95bb185b521::t_1ececc204dcbb4 1-128
+src/main/kotlin/com/padelaragon/desktop/data/parser/MatchDetailParser.kt
+  s_c3f95bb185b521::t_d65e5c985e27fb 1-98
+src/main/kotlin/com/padelaragon/desktop/data/parser/MatchResultParser.kt
+  s_c3f95bb185b521::t_27b460e56bb9de 1-91
+src/main/kotlin/com/padelaragon/desktop/data/parser/StandingsParser.kt
+  s_c3f95bb185b521::t_80e79a457bae44 1-68
+src/main/kotlin/com/padelaragon/desktop/data/parser/TeamDetailParser.kt
+  s_c3f95bb185b521::t_072b2fde12d708 1-247
+src/main/kotlin/com/padelaragon/desktop/data/repository/GroupRepository.kt
+  s_c3f95bb185b521::t_1fae10ba7bb91b 1-85
+src/main/kotlin/com/padelaragon/desktop/data/repository/MatchDetailRepository.kt
+  s_c3f95bb185b521::t_26a6aa306d0720 1-62
+src/main/kotlin/com/padelaragon/desktop/data/repository/MatchResultRepository.kt
+  s_c3f95bb185b521::t_50bb9f672d1650 1-145
+src/main/kotlin/com/padelaragon/desktop/data/repository/ScrapingService.kt
+  s_c3f95bb185b521::t_afea6483957e18 1-35
+src/main/kotlin/com/padelaragon/desktop/data/repository/StandingsRepository.kt
+  s_c3f95bb185b521::t_e36f15e05bee66 1-58
+src/main/kotlin/com/padelaragon/desktop/data/repository/TeamDetailRepository.kt
+  s_c3f95bb185b521::t_a89d5bd4a98bb3 1-189
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/FavoritesDataSource.kt
+  s_c3f95bb185b521::t_e798160c9fc6f7 1-9
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/GroupDataSource.kt
+  s_c3f95bb185b521::t_e9292666786b88 1-10
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/MatchDetailDataSource.kt
+  s_c3f95bb185b521::t_97f02167d4b2e4 1-9
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/MatchResultDataSource.kt
+  s_c3f95bb185b521::t_993ace07d94654 1-10
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/StandingsDataSource.kt
+  s_c3f95bb185b521::t_d81d60ce7198ad 1-8
+src/main/kotlin/com/padelaragon/desktop/data/repository/datasource/TeamDataSource.kt
+  s_c3f95bb185b521::t_9f35e177308f70 1-10
+src/main/kotlin/com/padelaragon/desktop/di/AppContainer.kt
+  s_c3f95bb185b521::t_38b205993dab64 1-40
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/ComputePlayerStatsUseCase.kt
+  s_c3f95bb185b521::t_3b72a2e7904f09 1-65
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/FindDefaultJornadaUseCase.kt
+  s_c3f95bb185b521::t_d3e8d870cd9f51 1-15
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/PrefetchGroupsUseCase.kt
+  s_c3f95bb185b521::t_dd0572d05677e5 1-23
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/SortGroupsUseCase.kt
+  s_c3f95bb185b521::t_a71fcadeb0b0bc 1-18
+src/main/kotlin/com/padelaragon/desktop/ui/components/LoadingErrorWrapper.kt
+  s_c3f95bb185b521::t_8096594dc8ccaa 1-69
+src/main/kotlin/com/padelaragon/desktop/ui/components/MatchCard.kt
+  s_c3f95bb185b521::t_acd50ae371941b 1-256
+src/main/kotlin/com/padelaragon/desktop/ui/components/StandingsTable.kt
+  s_c3f95bb185b521::t_060c4d3364c6e0 1-176
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupDetailScreen.kt
+  s_c3f95bb185b521::t_548ab6da9e4c28 1-247
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupListScreen.kt
+  s_c3f95bb185b521::t_5729535a708990 1-157
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  s_c3f95bb185b521::t_8944c6be689556 1-742
+src/main/kotlin/com/padelaragon/desktop/ui/theme/Color.kt
+  s_c3f95bb185b521::t_00e95c4cc5f388 1-20
+src/main/kotlin/com/padelaragon/desktop/ui/theme/Type.kt
+  s_c3f95bb185b521::t_2c264025cb4e9b 1-52
+src/main/kotlin/com/padelaragon/desktop/util/Logger.kt
+  s_acd563765995c0::t_76d10a3274a052 1-16
+.github/workflows/windows-exe.yml
+  s_c3f95bb185b521::t_9e980179b68d00 1-44
+.gitignore
+  s_c3f95bb185b521::t_7272f029d6800d 1-19
+README.md
+  s_c3f95bb185b521::t_78a0c9f8c28e65 1-42
+build.gradle.kts
+  s_c3f95bb185b521::t_4401fbc738e021 1-63
+gradle.properties
+  s_c3f95bb185b521::t_b6129bf3738e18 1-2
+settings.gradle.kts
+  s_c3f95bb185b521::t_e154927f4b45bb 1-19
+src/main/kotlin/com/padelaragon/desktop/Main.kt
+  s_c3f95bb185b521::t_53605f340df5ca 1-38
+src/main/kotlin/com/padelaragon/desktop/data/favorites/FavoritesManager.kt
+  s_c3f95bb185b521::t_59dfe87b22316c 1-55
+src/main/kotlin/com/padelaragon/desktop/data/network/HtmlFetcher.kt
+  s_c3f95bb185b521::t_e32e971ec824e2 1-147
+src/main/kotlin/com/padelaragon/desktop/ui/navigation/AppNavHost.kt
+  s_c3f95bb185b521::t_3bcef990b886bb 1-91
+src/main/kotlin/com/padelaragon/desktop/ui/theme/Theme.kt
+  s_c3f95bb185b521::t_bcc260512f0bb6 1-47
+src/main/kotlin/com/padelaragon/desktop/ui/viewmodel/GroupDetailViewModel.kt
+  s_c3f95bb185b521::t_c42f2c8d7fc0f8 1-307
+src/main/kotlin/com/padelaragon/desktop/ui/viewmodel/GroupListViewModel.kt
+  s_c3f95bb185b521::t_ba4984479bc411 1-135
+src/main/kotlin/com/padelaragon/desktop/ui/viewmodel/TeamViewModel.kt
+  s_c3f95bb185b521::t_7ea84b7b1f40cd 1-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e046dd28ed92648a9e3978f98cd7c6d34d1d36a9",
+  "prompts": {},
+  "sessions": {
+    "s_acd563765995c0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_01TmhCge6RUDxq5hupAALFKD",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    },
+    "s_c3f95bb185b521": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "349169dc-08b0-4ba3-b8f4-a0e35318ee98",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
