@@ -78,6 +78,10 @@ fun PlayerDetailScreen(
             }
 
             item {
+                GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost)
+            }
+
+            item {
                 TopPartnersCard(topPartners = stats.topPartners)
             }
 
@@ -120,6 +124,39 @@ private fun MatchesWonLostCard(matchesWon: Int, matchesLost: Int, winRate: Doubl
                     label = "% Victorias",
                     value = winRate?.let { "${it.toInt()}%" } ?: "--"
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Juegos ganados / perdidos",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onTertiaryContainer
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                StatColumn(label = "Ganados", value = gamesWon.toString())
+                StatColumn(label = "Perdidos", value = gamesLost.toString())
             }
         }
     }

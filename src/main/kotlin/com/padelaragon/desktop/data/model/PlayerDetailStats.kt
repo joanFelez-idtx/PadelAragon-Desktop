@@ -2,12 +2,15 @@ package com.padelaragon.desktop.data.model
 
 /**
  * Detailed desktop-only statistics for a single player: total matches
- * won/lost, and the teammates they've partnered with most often.
+ * won/lost, total games won/lost across all sets, and the teammates
+ * they've partnered with most often.
  */
 data class PlayerDetailStats(
     val name: String,
     val matchesWon: Int,
     val matchesLost: Int,
+    val gamesWon: Int,
+    val gamesLost: Int,
     val topPartners: List<PartnerCount>,
     val matches: List<PlayerMatchRecord> = emptyList()
 ) {

@@ -8,10 +8,11 @@ import com.padelaragon.desktop.data.model.PlayerMatchRecord
 import com.padelaragon.desktop.data.model.PlayerSetScore
 
 /**
- * Desktop-only use case: computes total matches won/lost and the top 3 most
- * frequent partners for a single player, across all of the team's played
- * matches. Reuses the same match/detail data already loaded for the team's
- * player-stats tab, so no extra network calls are required.
+ * Desktop-only use case: computes total matches won/lost, total games
+ * won/lost, and the top 3 most frequent partners for a single player,
+ * across all of the team's played matches. Reuses the same match/detail
+ * data already loaded for the team's player-stats tab, so no extra network
+ * calls are required.
  */
 class ComputePlayerDetailStatsUseCase {
     operator fun invoke(
@@ -23,6 +24,8 @@ class ComputePlayerDetailStatsUseCase {
         val targetKey = playerName.trim().lowercase()
         var matchesWon = 0
         var matchesLost = 0
+        var gamesWon = 0
+        var gamesLost = 0
         val partnerCounts = mutableMapOf<String, Int>()
         val partnerDisplayNames = mutableMapOf<String, String>()
         val matches = mutableListOf<PlayerMatchRecord>()
@@ -46,10 +49,12 @@ class ComputePlayerDetailStatsUseCase {
                 var pairSetsLost = 0
                 val playerSets = mutableListOf<PlayerSetScore>()
                 for (set in pair.sets) {
-                    val gamesWon = if (isLocal) set.localScore else set.visitorScore
-                    val gamesLost = if (isLocal) set.visitorScore else set.localScore
-                    playerSets += PlayerSetScore(gamesWon = gamesWon, gamesLost = gamesLost)
-                    if (gamesWon > gamesLost) pairSetsWon++ else if (gamesLost > gamesWon) pairSetsLost++
+                    val setGamesWon = if (isLocal) set.localScore else set.visitorScore
+                    val setGamesLost = if (isLocal) set.visitorScore else set.localScore
+                    playerSets += PlayerSetScore(gamesWon = setGamesWon, gamesLost = setGamesLost)
+                    if (setGamesWon > setGamesLost) pairSetsWon++ else if (setGamesLost > setGamesWon) pairSetsLost++
+                    gamesWon += setGamesWon
+                    gamesLost += setGamesLost
                 }
                 val pairWon = pairSetsWon > pairSetsLost
                 if (pairWon) matchesWon++ else matchesLost++
@@ -86,6 +91,8 @@ class ComputePlayerDetailStatsUseCase {
             name = playerName,
             matchesWon = matchesWon,
             matchesLost = matchesLost,
+            gamesWon = gamesWon,
+            gamesLost = gamesLost,
             topPartners = topPartners,
             matches = matches.sortedByDescending { it.jornada }
         )

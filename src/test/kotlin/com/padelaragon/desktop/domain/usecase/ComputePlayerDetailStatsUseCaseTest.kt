@@ -46,6 +46,8 @@ class ComputePlayerDetailStatsUseCaseTest {
 
         assertEquals(1, stats.matchesWon)
         assertEquals(0, stats.matchesLost)
+        assertEquals(15, stats.gamesWon) // 6 + 3 + 6
+        assertEquals(12, stats.gamesLost) // 4 + 6 + 2
         assertEquals(1, stats.topPartners.size)
         assertEquals("Bob", stats.topPartners.first().name)
         assertEquals(1, stats.topPartners.first().matchesTogether)
@@ -85,6 +87,8 @@ class ComputePlayerDetailStatsUseCaseTest {
         // Alice is on the visitor side, so games won/lost should use the visitor score column.
         assertEquals(1, stats.matchesWon)
         assertEquals(0, stats.matchesLost)
+        assertEquals(16, stats.gamesWon) // 4 + 6 + 6
+        assertEquals(11, stats.gamesLost) // 6 + 3 + 2
 
         assertEquals(1, stats.matches.size)
         val record = stats.matches.first()
