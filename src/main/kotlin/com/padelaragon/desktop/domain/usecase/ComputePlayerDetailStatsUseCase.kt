@@ -77,7 +77,8 @@ class ComputePlayerDetailStatsUseCase {
                     opponentPlayer1 = opponentPlayer1,
                     opponentPlayer2 = opponentPlayer2,
                     sets = playerSets,
-                    won = pairWon
+                    won = pairWon,
+                    isHome = isLocal
                 )
             }
         }

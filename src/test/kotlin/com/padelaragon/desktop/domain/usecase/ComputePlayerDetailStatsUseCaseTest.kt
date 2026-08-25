@@ -61,6 +61,7 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals("Dave", record.opponentPlayer2)
         assertEquals(listOf(6 to 4, 3 to 6, 6 to 2), record.sets.map { it.gamesWon to it.gamesLost })
         assertEquals(true, record.won)
+        assertEquals(true, record.isHome)
         assertEquals(100.0, stats.winRate)
     }
 
@@ -98,6 +99,7 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals("Dave", record.opponentPlayer2)
         assertEquals(listOf(4 to 6, 6 to 3, 6 to 2), record.sets.map { it.gamesWon to it.gamesLost })
         assertEquals(true, record.won)
+        assertEquals(false, record.isHome)
         assertEquals(100.0, stats.winRate)
     }
 

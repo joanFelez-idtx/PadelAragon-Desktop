@@ -316,6 +316,7 @@ private fun MatchHistoryRow(match: PlayerMatchRecord) {
                 text = buildString {
                     append("Jornada ${match.jornada}")
                     if (!match.date.isNullOrBlank()) append(" · ${match.date}")
+                    append(if (match.isHome) " · Local" else " · Visitante")
                 },
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)

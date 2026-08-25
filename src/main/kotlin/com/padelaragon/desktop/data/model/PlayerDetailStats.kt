@@ -51,5 +51,6 @@ data class PlayerMatchRecord(
     val opponentPlayer1: String,
     val opponentPlayer2: String,
     val sets: List<PlayerSetScore>,
-    val won: Boolean
+    val won: Boolean,
+    val isHome: Boolean
 )
