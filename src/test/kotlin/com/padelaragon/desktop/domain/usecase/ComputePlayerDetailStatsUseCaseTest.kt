@@ -44,8 +44,8 @@ class ComputePlayerDetailStatsUseCaseTest {
 
         val stats = useCase(mapOf(detailUrl to detail), playedMatches, teamId, "Alice")
 
-        assertEquals(15, stats.gamesWon) // 6 + 3 + 6
-        assertEquals(12, stats.gamesLost) // 4 + 6 + 2
+        assertEquals(1, stats.matchesWon)
+        assertEquals(0, stats.matchesLost)
         assertEquals(1, stats.topPartners.size)
         assertEquals("Bob", stats.topPartners.first().name)
         assertEquals(1, stats.topPartners.first().matchesTogether)
@@ -57,8 +57,7 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals("Visitor", record.opponentTeam)
         assertEquals("Carol", record.opponentPlayer1)
         assertEquals("Dave", record.opponentPlayer2)
-        assertEquals(15, record.gamesWon)
-        assertEquals(12, record.gamesLost)
+        assertEquals(listOf(6 to 4, 3 to 6, 6 to 2), record.sets.map { it.gamesWon to it.gamesLost })
         assertEquals(true, record.won)
         assertEquals(100.0, stats.winRate)
     }
@@ -75,7 +74,7 @@ class ComputePlayerDetailStatsUseCaseTest {
                     localPlayer2 = "Dave",
                     visitorPlayer1 = "Alice",
                     visitorPlayer2 = "Bob",
-                    sets = listOf(SetScore(6, 4), SetScore(3, 6))
+                    sets = listOf(SetScore(6, 4), SetScore(3, 6), SetScore(2, 6))
                 )
             )
         )
@@ -84,8 +83,8 @@ class ComputePlayerDetailStatsUseCaseTest {
         val stats = useCase(mapOf(detailUrl to detail), playedMatches, teamId, "Alice")
 
         // Alice is on the visitor side, so games won/lost should use the visitor score column.
-        assertEquals(10, stats.gamesWon) // 4 + 6
-        assertEquals(9, stats.gamesLost) // 6 + 3
+        assertEquals(1, stats.matchesWon)
+        assertEquals(0, stats.matchesLost)
 
         assertEquals(1, stats.matches.size)
         val record = stats.matches.first()
@@ -93,8 +92,7 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals("Local", record.opponentTeam)
         assertEquals("Carol", record.opponentPlayer1)
         assertEquals("Dave", record.opponentPlayer2)
-        assertEquals(10, record.gamesWon)
-        assertEquals(9, record.gamesLost)
+        assertEquals(listOf(4 to 6, 6 to 3, 6 to 2), record.sets.map { it.gamesWon to it.gamesLost })
         assertEquals(true, record.won)
         assertEquals(100.0, stats.winRate)
     }

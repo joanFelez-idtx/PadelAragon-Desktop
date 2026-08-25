@@ -74,7 +74,7 @@ fun PlayerDetailScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost, winRate = stats.winRate)
+                MatchesWonLostCard(matchesWon = stats.matchesWon, matchesLost = stats.matchesLost, winRate = stats.winRate)
             }
 
             item {
@@ -89,7 +89,7 @@ fun PlayerDetailScreen(
 }
 
 @Composable
-private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int, winRate: Double?) {
+private fun MatchesWonLostCard(matchesWon: Int, matchesLost: Int, winRate: Double?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -105,7 +105,7 @@ private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int, winRate: Double?) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Juegos ganados / perdidos",
+                text = "Partidos ganados / perdidos",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -114,8 +114,8 @@ private fun GamesWonLostCard(gamesWon: Int, gamesLost: Int, winRate: Double?) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                StatColumn(label = "Ganados", value = gamesWon.toString())
-                StatColumn(label = "Perdidos", value = gamesLost.toString())
+                StatColumn(label = "Ganados", value = matchesWon.toString())
+                StatColumn(label = "Perdidos", value = matchesLost.toString())
                 StatColumn(
                     label = "% Victorias",
                     value = winRate?.let { "${it.toInt()}%" } ?: "--"
@@ -320,7 +320,7 @@ private fun MatchHistoryRow(match: PlayerMatchRecord) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = "${match.gamesWon}-${match.gamesLost}",
+                text = match.sets.joinToString(", ") { "${it.gamesWon}-${it.gamesLost}" },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
             )
