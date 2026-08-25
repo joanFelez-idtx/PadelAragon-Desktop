@@ -60,6 +60,7 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals(15, record.gamesWon)
         assertEquals(12, record.gamesLost)
         assertEquals(true, record.won)
+        assertEquals(100.0, stats.winRate)
     }
 
     @Test
@@ -95,6 +96,58 @@ class ComputePlayerDetailStatsUseCaseTest {
         assertEquals(10, record.gamesWon)
         assertEquals(9, record.gamesLost)
         assertEquals(true, record.won)
+        assertEquals(100.0, stats.winRate)
+    }
+
+    @Test
+    fun `computes win rate as percentage of matches won`() {
+        val teamId = 1
+        val winDetail = MatchDetail(
+            pairs = listOf(
+                PairDetail(
+                    pairNumber = 1,
+                    localPlayer1 = "Alice",
+                    localPlayer2 = "Bob",
+                    visitorPlayer1 = "Carol",
+                    visitorPlayer2 = "Dave",
+                    sets = listOf(SetScore(6, 0), SetScore(6, 0))
+                )
+            )
+        )
+        val lossDetail = MatchDetail(
+            pairs = listOf(
+                PairDetail(
+                    pairNumber = 1,
+                    localPlayer1 = "Alice",
+                    localPlayer2 = "Bob",
+                    visitorPlayer1 = "Carol",
+                    visitorPlayer2 = "Dave",
+                    sets = listOf(SetScore(0, 6), SetScore(0, 6))
+                )
+            )
+        )
+        val playedMatches = listOf(
+            match(jornada = 1, localTeamId = teamId, visitorTeamId = 2, detailUrl = "win"),
+            match(jornada = 2, localTeamId = teamId, visitorTeamId = 2, detailUrl = "loss"),
+            match(jornada = 3, localTeamId = teamId, visitorTeamId = 2, detailUrl = "win2")
+        )
+
+        val stats = useCase(
+            mapOf("win" to winDetail, "loss" to lossDetail, "win2" to winDetail),
+            playedMatches,
+            teamId,
+            "Alice"
+        )
+
+        assertEquals(3, stats.matches.size)
+        assertEquals(2.0 / 3.0 * 100.0, stats.winRate!!, 0.001)
+    }
+
+    @Test
+    fun `win rate is null when there are no matches`() {
+        val stats = useCase(emptyMap(), emptyList(), 1, "Alice")
+
+        assertEquals(null, stats.winRate)
     }
 
     @Test

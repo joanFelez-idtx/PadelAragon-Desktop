@@ -10,7 +10,11 @@ data class PlayerDetailStats(
     val gamesLost: Int,
     val topPartners: List<PartnerCount>,
     val matches: List<PlayerMatchRecord> = emptyList()
-)
+) {
+    /** Percentage of matches won (0-100), or null if the player has no matches. */
+    val winRate: Double?
+        get() = if (matches.isEmpty()) null else (matches.count { it.won } * 100.0) / matches.size
+}
 
 data class PartnerCount(
     val name: String,
