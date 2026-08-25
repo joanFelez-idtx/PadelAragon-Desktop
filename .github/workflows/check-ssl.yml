@@ -1,0 +1,30 @@
+name: Check SSL
+on: workflow_dispatch
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - name: Check cert chain
+        shell: pwsh
+        run: |
+          $req = [System.Net.HttpWebRequest]::Create("https://padelfederacion.es/pAGINAS/ARAPADEL/Ligas_Calendario.asp")
+          try {
+            $resp = $req.GetResponse()
+            Write-Host "SUCCESS: " $resp.StatusCode
+          } catch {
+            Write-Host "ERROR: " $_.Exception.Message
+            Write-Host $_.Exception.InnerException
+          }
+          $req2 = [System.Net.Sockets.TcpClient]::new("padelfederacion.es", 443)
+          $sslStream = New-Object System.Net.Security.SslStream($req2.GetStream(), $false, {param($s,$c,$ch,$e) $true})
+          $sslStream.AuthenticateAsClient("padelfederacion.es")
+          $cert = $sslStream.RemoteCertificate
+          $chain = New-Object System.Security.Cryptography.X509Certificates.X509Chain
+          $chain.Build($cert)
+          foreach ($e in $chain.ChainElements) {
+            Write-Host "Subject:" $e.Certificate.Subject
+            Write-Host "Issuer:" $e.Certificate.Issuer
+          }
+          foreach ($status in $chain.ChainStatus) {
+            Write-Host "Chain status:" $status.Status $status.StatusInformation
+          }
