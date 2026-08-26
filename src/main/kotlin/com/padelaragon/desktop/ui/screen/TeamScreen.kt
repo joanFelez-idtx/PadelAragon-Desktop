@@ -2,8 +2,10 @@ package com.padelaragon.desktop.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,7 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -58,6 +63,7 @@ import com.padelaragon.desktop.domain.usecase.AgedPlayer
 import com.padelaragon.desktop.domain.usecase.CoupleCombination
 import com.padelaragon.desktop.domain.usecase.GeneratePossibleCouplesUseCase
 import com.padelaragon.desktop.ui.components.LoadingErrorWrapper
+import com.padelaragon.desktop.ui.components.visibleScrollbarStyle
 import com.padelaragon.desktop.ui.components.MatchCard
 import com.padelaragon.desktop.ui.viewmodel.TeamViewModel
 import com.padelaragon.desktop.ui.viewmodel.TeamViewModelFactory
@@ -164,7 +170,7 @@ fun TeamScreen(
 
                     when (selectedTabIndex) {
                         0 -> {
-                            LazyColumn(
+                            ScrollbarLazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -240,7 +246,7 @@ fun TeamScreen(
                             var selectedPlayerNames by remember(uiState.teamDetail) {
                                 mutableStateOf(setOf<String>())
                             }
-                            LazyColumn(
+                            ScrollbarLazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -288,7 +294,7 @@ fun TeamScreen(
                         }
 
                         2 -> {
-                            LazyColumn(
+                            ScrollbarLazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -335,7 +341,7 @@ fun TeamScreen(
                         }
 
                         3 -> {
-                            LazyColumn(
+                            ScrollbarLazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -402,7 +408,7 @@ fun TeamScreen(
                                     )
                                 }
                             } else {
-                                LazyColumn(
+                                ScrollbarLazyColumn(
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
                                     verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -551,6 +557,37 @@ fun TeamScreen(
                 }
             }
         }
+    }
+}
+
+/**
+ * A [LazyColumn] with a draggable vertical scrollbar overlaid on its trailing
+ * edge, so tab content (Resumen, Plantilla, Resultados, etc.) is scrollable
+ * with more than just the mouse wheel.
+ */
+@Composable
+private fun ScrollbarLazyColumn(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    content: LazyListScope.() -> Unit
+) {
+    val listState = rememberLazyListState()
+    Box(modifier = modifier) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize().padding(end = 12.dp),
+            contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
+            content = content
+        )
+        VerticalScrollbar(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(listState),
+            style = visibleScrollbarStyle()
+        )
     }
 }
 
