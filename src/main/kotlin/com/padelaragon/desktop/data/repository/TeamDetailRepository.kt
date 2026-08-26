@@ -4,11 +4,11 @@ import com.padelaragon.desktop.util.Logger
 
 import com.padelaragon.desktop.data.local.entity.PlayerEntity
 import com.padelaragon.desktop.data.local.entity.TeamDetailEntity
+import com.padelaragon.desktop.data.model.League
 import com.padelaragon.desktop.data.model.TeamDetail
 import com.padelaragon.desktop.data.model.TeamInfo
 import com.padelaragon.desktop.data.parser.TeamDetailParser
 import com.padelaragon.desktop.data.repository.ScrapingService.Companion.BASE_URL
-import com.padelaragon.desktop.data.repository.ScrapingService.Companion.LEAGUE_ID
 import com.padelaragon.desktop.data.repository.datasource.GroupDataSource
 import com.padelaragon.desktop.data.repository.datasource.MatchResultDataSource
 import com.padelaragon.desktop.data.repository.datasource.StandingsDataSource
@@ -20,6 +20,7 @@ import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 
 class TeamDetailRepository(
+    private val league: League,
     private val scraping: ScrapingService,
     private val teamDetailParser: TeamDetailParser = TeamDetailParser(),
     private val groupDataSource: GroupDataSource,
@@ -32,9 +33,9 @@ class TeamDetailRepository(
     override suspend fun getTeamDetail(teamId: Int, teamHref: String): TeamDetail? {
         cachedTeamDetails[teamId]?.let { return it }
 
-        val entity = scraping.db.teamDetailDao().getByTeamId(teamId)
+        val entity = scraping.db.teamDetailDao().getByTeamId(league.id, teamId)
         if (entity != null) {
-            val players = scraping.db.teamDetailDao().getPlayersByTeamId(teamId).map { it.toModel() }
+            val players = scraping.db.teamDetailDao().getPlayersByTeamId(league.id, teamId).map { it.toModel() }
             val detail = TeamDetail(category = entity.category, captainName = entity.captainName, players = players)
             cachedTeamDetails[teamId] = detail
             return detail
@@ -46,9 +47,9 @@ class TeamDetailRepository(
             listOf(buildTeamDetailUrl(teamHref))
         } else {
             listOf(
-                "${BASE_URL}Ligas_FichaEquipo.asp?Liga=$LEAGUE_ID&IdEquipo=$teamId",
-                "${BASE_URL}Ligas_Equipo.asp?Liga=$LEAGUE_ID&IdEquipo=$teamId",
-                "${BASE_URL}Ligas_Clasificacion.asp?Liga=$LEAGUE_ID&IdEquipo=$teamId"
+                "${BASE_URL}Ligas_FichaEquipo.asp?Liga=${league.id}&IdEquipo=$teamId",
+                "${BASE_URL}Ligas_Equipo.asp?Liga=${league.id}&IdEquipo=$teamId",
+                "${BASE_URL}Ligas_Clasificacion.asp?Liga=${league.id}&IdEquipo=$teamId"
             )
         }
 
@@ -172,8 +173,8 @@ class TeamDetailRepository(
 
     private suspend fun persistTeamDetail(teamId: Int, detail: TeamDetail) {
         scraping.db.teamDetailDao().insertTeamWithPlayers(
-            TeamDetailEntity(teamId = teamId, category = detail.category, captainName = detail.captainName),
-            detail.players.map { PlayerEntity.fromModel(teamId, it) }
+            TeamDetailEntity(leagueId = league.id, teamId = teamId, category = detail.category, captainName = detail.captainName),
+            detail.players.map { PlayerEntity.fromModel(league.id, teamId, it) }
         )
     }
 

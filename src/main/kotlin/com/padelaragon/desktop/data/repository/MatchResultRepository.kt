@@ -2,11 +2,11 @@ package com.padelaragon.desktop.data.repository
 
 import com.padelaragon.desktop.data.local.entity.JornadaEntity
 import com.padelaragon.desktop.data.local.entity.MatchResultEntity
+import com.padelaragon.desktop.data.model.League
 import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.data.parser.GroupParser
 import com.padelaragon.desktop.data.parser.MatchResultParser
 import com.padelaragon.desktop.data.repository.ScrapingService.Companion.BASE_URL
-import com.padelaragon.desktop.data.repository.ScrapingService.Companion.LEAGUE_ID
 import com.padelaragon.desktop.data.repository.datasource.MatchResultDataSource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -14,6 +14,7 @@ import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.ConcurrentHashMap
 
 class MatchResultRepository(
+    private val league: League,
     private val scraping: ScrapingService,
     private val matchResultParser: MatchResultParser = MatchResultParser(),
     private val groupParser: GroupParser = GroupParser()
@@ -29,26 +30,26 @@ class MatchResultRepository(
     override suspend fun getJornadas(groupId: Int): List<Int> {
         cachedJornadas[groupId]?.let { return it }
 
-        val roomJornadas = scraping.db.jornadaDao().getByGroupId(groupId)
+        val roomJornadas = scraping.db.jornadaDao().getByGroupId(league.id, groupId)
         if (roomJornadas.isNotEmpty()) {
             cachedJornadas[groupId] = roomJornadas
             return roomJornadas
         }
 
-        val url = "${BASE_URL}Ligas_Calendario.asp?Liga=$LEAGUE_ID&grupo=$groupId"
+        val url = "${BASE_URL}Ligas_Calendario.asp?Liga=${league.id}&grupo=$groupId"
         val html = scraping.withSemaphore { scraping.fetcher.get(url) }
         val jornadas = groupParser.parseJornadas(html)
         if (jornadas.isNotEmpty()) {
             cachedJornadas[groupId] = jornadas
-            scraping.db.jornadaDao().deleteByGroupId(groupId)
-            scraping.db.jornadaDao().insertAll(jornadas.map { JornadaEntity(groupId, it) })
+            scraping.db.jornadaDao().deleteByGroupId(league.id, groupId)
+            scraping.db.jornadaDao().insertAll(jornadas.map { JornadaEntity(league.id, groupId, it) })
         }
         return jornadas
     }
 
     override suspend fun getMatchResults(groupId: Int, jornada: Int): List<MatchResult> {
         val key = resultKey(groupId, jornada)
-        val cacheKey = "results_${groupId}_$jornada"
+        val cacheKey = "results_${league.id}_${groupId}_$jornada"
 
         // 1. In-memory cache (finalized jornadas are permanent)
         if (key in finalizedJornadas) {
@@ -63,7 +64,7 @@ class MatchResultRepository(
         }
 
         // 3. Single Room query (eliminates duplicate DB reads)
-        val roomResults = scraping.db.matchResultDao().getByGroupAndJornada(groupId, jornada).map { it.toModel() }
+        val roomResults = scraping.db.matchResultDao().getByGroupAndJornada(league.id, groupId, jornada).map { it.toModel() }
         if (roomResults.isNotEmpty()) {
             val allFinalized = roomResults.all { it.localScore != "--" && it.visitorScore != "--" }
             if (allFinalized) {
@@ -78,7 +79,7 @@ class MatchResultRepository(
         }
 
         // 4. Network fetch
-        val url = "${BASE_URL}Ligas_Calendario.asp?Liga=$LEAGUE_ID&grupo=$groupId&jornada=$jornada"
+        val url = "${BASE_URL}Ligas_Calendario.asp?Liga=${league.id}&grupo=$groupId&jornada=$jornada"
         val html = scraping.withSemaphore { scraping.fetcher.get(url) }
         val results = matchResultParser.parse(html, jornada)
 
@@ -88,8 +89,8 @@ class MatchResultRepository(
             if (allFinalized) {
                 finalizedJornadas.add(key)
             }
-            scraping.db.matchResultDao().deleteByGroupAndJornada(groupId, jornada)
-            scraping.db.matchResultDao().insertAll(results.map { MatchResultEntity.fromModel(groupId, it) })
+            scraping.db.matchResultDao().deleteByGroupAndJornada(league.id, groupId, jornada)
+            scraping.db.matchResultDao().insertAll(results.map { MatchResultEntity.fromModel(league.id, groupId, it) })
             scraping.updateCacheTimestamp(cacheKey)
         }
 
@@ -133,7 +134,7 @@ class MatchResultRepository(
             val key = resultKey(groupId, j)
             if (key !in finalizedJornadas) {
                 cachedResults.remove(key)
-                scraping.db.cacheTimestampDao().delete("results_${groupId}_$j")
+                scraping.db.cacheTimestampDao().delete("results_${league.id}_${groupId}_$j")
             }
         }
         return getAllMatchResults(groupId)

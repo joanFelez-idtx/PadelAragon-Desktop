@@ -7,7 +7,7 @@ import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.ui.unit.dp
 import com.padelaragon.desktop.data.local.AppDatabase
 import com.padelaragon.desktop.data.network.HtmlFetcher
-import com.padelaragon.desktop.di.AppContainer
+import com.padelaragon.desktop.di.MultiLeagueContainer
 import com.padelaragon.desktop.ui.navigation.AppNavHost
 import com.padelaragon.desktop.ui.theme.PadelAragonTheme
 import java.io.File
@@ -22,7 +22,7 @@ fun main() {
 
     val cacheDir = File(appDataDir, "cache")
     val database = AppDatabase.getInstance(appDataDir)
-    val container = AppContainer(database, cacheDir)
+    val multiLeagueContainer = MultiLeagueContainer(database, cacheDir)
 
     application {
         Window(
@@ -31,7 +31,7 @@ fun main() {
             state = rememberWindowState(size = DpSize(1100.dp, 800.dp))
         ) {
             PadelAragonTheme {
-                AppNavHost(container)
+                AppNavHost(multiLeagueContainer)
             }
         }
     }

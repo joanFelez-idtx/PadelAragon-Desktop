@@ -3,8 +3,9 @@ package com.padelaragon.desktop.data.local.entity
 import androidx.room.Entity
 import com.padelaragon.desktop.data.model.Player
 
-@Entity(tableName = "players", primaryKeys = ["teamId", "name"])
+@Entity(tableName = "players", primaryKeys = ["leagueId", "teamId", "name"])
 data class PlayerEntity(
+    val leagueId: Int,
     val teamId: Int,
     val name: String,
     val isCaptain: Boolean,
@@ -19,7 +20,8 @@ data class PlayerEntity(
     )
 
     companion object {
-        fun fromModel(teamId: Int, model: Player): PlayerEntity = PlayerEntity(
+        fun fromModel(leagueId: Int, teamId: Int, model: Player): PlayerEntity = PlayerEntity(
+            leagueId = leagueId,
             teamId = teamId,
             name = model.name,
             isCaptain = model.isCaptain,

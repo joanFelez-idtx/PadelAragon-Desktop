@@ -1,4 +1,4 @@
-val versionMajor = 1
+val versionMajor = 2
 val versionMinor = 0
 val versionPatch = 0
 

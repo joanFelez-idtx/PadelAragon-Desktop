@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -62,7 +63,10 @@ fun GroupsMasterDetailScreen(
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
     listViewModelFactory: GroupListViewModelFactory,
     groupDetailViewModelFactory: (groupId: Int, groupName: String) -> GroupDetailViewModelFactory,
-    listViewModel: GroupListViewModel = viewModel(factory = listViewModelFactory)
+    title: String = "Liga de Aragón 2026",
+    onBack: (() -> Unit)? = null,
+    viewModelKey: String? = null,
+    listViewModel: GroupListViewModel = viewModel(key = viewModelKey, factory = listViewModelFactory)
 ) {
     val uiState by listViewModel.uiState.collectAsState()
     val isRefreshing by listViewModel.isRefreshing.collectAsState()
@@ -81,7 +85,18 @@ fun GroupsMasterDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Liga de Aragón 2026", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(text = title, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                },
+                navigationIcon = {
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver a ligas",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 },
                 actions = {
                     IconButton(

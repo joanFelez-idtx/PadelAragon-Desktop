@@ -32,7 +32,7 @@ import com.padelaragon.desktop.data.local.entity.TeamDetailEntity
         JornadaEntity::class,
         CacheTimestamp::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -59,7 +59,7 @@ abstract class AppDatabase : RoomDatabase() {
                     val dbFile = File(appDataDir, "padel_aragon.db")
                     Room.databaseBuilder<AppDatabase>(dbFile.absolutePath)
                         .setDriver(BundledSQLiteDriver())
-                        .fallbackToDestructiveMigration(false)
+                        .fallbackToDestructiveMigration(true)
                         .build()
                         .also { INSTANCE = it }
                 }

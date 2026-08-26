@@ -1,13 +1,13 @@
 package com.padelaragon.desktop.data.local.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.padelaragon.desktop.data.model.Gender
 import com.padelaragon.desktop.data.model.LeagueGroup
 
-@Entity(tableName = "league_groups")
+@Entity(tableName = "league_groups", primaryKeys = ["leagueId", "id"])
 data class LeagueGroupEntity(
-    @PrimaryKey val id: Int,
+    val leagueId: Int,
+    val id: Int,
     val name: String,
     val gender: String,
     val category: String,
@@ -22,7 +22,8 @@ data class LeagueGroupEntity(
     )
 
     companion object {
-        fun fromModel(model: LeagueGroup): LeagueGroupEntity = LeagueGroupEntity(
+        fun fromModel(leagueId: Int, model: LeagueGroup): LeagueGroupEntity = LeagueGroupEntity(
+            leagueId = leagueId,
             id = model.id,
             name = model.name,
             gender = model.gender.name,

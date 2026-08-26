@@ -64,7 +64,8 @@ fun TeamScreen(
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
     onPlayerClick: (playerName: String, matchDetails: Map<String, MatchDetail>, playedMatches: List<MatchResult>) -> Unit,
     viewModelFactory: TeamViewModelFactory,
-    viewModel: TeamViewModel = viewModel(key = "team_$teamId", factory = viewModelFactory)
+    viewModelKey: String = "team_$teamId",
+    viewModel: TeamViewModel = viewModel(key = viewModelKey, factory = viewModelFactory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()

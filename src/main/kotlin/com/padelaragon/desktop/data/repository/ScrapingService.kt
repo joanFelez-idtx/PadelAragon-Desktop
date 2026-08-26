@@ -30,6 +30,5 @@ class ScrapingService(
 
     companion object {
         const val BASE_URL = "https://padelfederacion.es/pAGINAS/ARAPADEL/"
-        const val LEAGUE_ID = 27951
     }
 }
