@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,15 +47,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.padelaragon.desktop.data.model.Gender
+import com.padelaragon.desktop.data.model.League
 import com.padelaragon.desktop.data.model.MatchDetail
 import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.data.model.Player
 import com.padelaragon.desktop.data.model.StandingRow
 import com.padelaragon.desktop.data.model.TeamDetail
+import com.padelaragon.desktop.domain.usecase.AgedPlayer
+import com.padelaragon.desktop.domain.usecase.CoupleCombination
+import com.padelaragon.desktop.domain.usecase.GeneratePossibleCouplesUseCase
 import com.padelaragon.desktop.ui.components.LoadingErrorWrapper
 import com.padelaragon.desktop.ui.components.MatchCard
 import com.padelaragon.desktop.ui.viewmodel.TeamViewModel
 import com.padelaragon.desktop.ui.viewmodel.TeamViewModelFactory
+import java.time.Year
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +69,7 @@ fun TeamScreen(
     teamId: Int,
     teamName: String,
     groupId: Int,
+    league: League? = null,
     onBack: () -> Unit,
     onTeamClick: (teamId: Int, teamName: String, groupId: Int) -> Unit,
     onPlayerClick: (playerName: String, matchDetails: Map<String, MatchDetail>, playedMatches: List<MatchResult>) -> Unit,
@@ -234,6 +244,15 @@ fun TeamScreen(
                                 uiState.teamDetail?.let { detail ->
                                     item {
                                         TeamDetailCard(detail = detail)
+                                    }
+                                    if (league == League.VETERANOS) {
+                                        item {
+                                            CouplesGeneratorCard(
+                                                players = detail.players,
+                                                groupName = uiState.groupName,
+                                                category = detail.category
+                                            )
+                                        }
                                     }
                                 } ?: item {
                                     Box(
@@ -704,6 +723,206 @@ private fun TeamDetailCard(detail: TeamDetail) {
                     text = "No se encontró información de la plantilla",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.6f)
+                )
+            }
+        }
+    }
+}
+
+private fun resolveGender(groupName: String?, category: String?): Gender? {
+    val text = listOfNotNull(groupName, category).joinToString(" ").uppercase()
+    return when {
+        text.contains("FEMENINA") -> Gender.FEMENINA
+        text.contains("MASCULINA") -> Gender.MASCULINA
+        else -> null
+    }
+}
+
+private fun playerAge(player: Player): Int? {
+    val birthYear = player.birthYear?.toIntOrNull() ?: return null
+    val currentYear = Year.now().value
+    if (birthYear < 1900 || birthYear > currentYear) return null
+    return currentYear - birthYear
+}
+
+@Composable
+private fun CouplesGeneratorCard(
+    players: List<Player>,
+    groupName: String?,
+    category: String?
+) {
+    val gender = resolveGender(groupName, category)
+    val eligiblePlayers = remember(players) {
+        players.mapNotNull { player -> playerAge(player)?.let { age -> player to age } }
+    }
+    var selected by remember(players) { mutableStateOf(setOf<String>()) }
+    var result by remember(players) {
+        mutableStateOf<GeneratePossibleCouplesUseCase.Result?>(null)
+    }
+    val useCase = remember { GeneratePossibleCouplesUseCase() }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Generador de posibles parejas",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+
+            if (gender == null) {
+                Text(
+                    text = "No se pudo determinar la categoría (masculina/femenina) del grupo, " +
+                        "por lo que no se pueden calcular las sumas de edad requeridas.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                )
+                return@Column
+            }
+
+            val thresholds = if (gender == Gender.MASCULINA)
+                GeneratePossibleCouplesUseCase.MASCULINA_THRESHOLDS
+            else
+                GeneratePossibleCouplesUseCase.FEMENINA_THRESHOLDS
+
+            Text(
+                text = "Categoría ${gender.name.lowercase().replaceFirstChar { it.uppercase() }} · " +
+                    "Sumas mínimas requeridas: Pareja 1 ≥ ${thresholds[0]}, " +
+                    "Pareja 2 ≥ ${thresholds[1]}, Pareja 3 ≥ ${thresholds[2]}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+            )
+
+            if (eligiblePlayers.isEmpty()) {
+                Text(
+                    text = "Ningún jugador de la plantilla tiene año de nacimiento disponible.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                )
+                return@Column
+            }
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
+            )
+
+            eligiblePlayers.forEach { (player, age) ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            selected = if (player.name in selected) {
+                                selected - player.name
+                            } else {
+                                selected + player.name
+                            }
+                        }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = player.name in selected,
+                        onCheckedChange = { checked ->
+                            selected = if (checked) selected + player.name else selected - player.name
+                        }
+                    )
+                    Text(
+                        text = "${player.name} ($age años)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            }
+
+            Button(
+                onClick = {
+                    val chosen = eligiblePlayers
+                        .filter { (player, _) -> player.name in selected }
+                        .map { (player, age) -> AgedPlayer(player.name, age) }
+                    result = useCase(chosen, gender)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Generar parejas")
+            }
+
+            when (val r = result) {
+                null -> Unit
+                GeneratePossibleCouplesUseCase.Result.NoCombinationsPossible -> {
+                    Text(
+                        text = "No hay ninguna combinación de parejas posible con los jugadores seleccionados.",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                GeneratePossibleCouplesUseCase.Result.TooManyPlayersSelected -> {
+                    Text(
+                        text = "Hay demasiados jugadores seleccionados para calcular todas las combinaciones. " +
+                            "Selecciona 16 jugadores como máximo.",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                is GeneratePossibleCouplesUseCase.Result.Success -> {
+                    Text(
+                        text = "${r.combinations.size} combinación(es) posible(s)",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    r.combinations.forEachIndexed { index, combo ->
+                        CoupleCombinationCard(index = index + 1, combination = combo)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CoupleCombinationCard(index: Int, combination: CoupleCombination) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Combinación $index",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            combination.pairs.forEach { pair ->
+                Text(
+                    text = "Pareja ${pair.tierIndex + 1} (suma ${pair.ageSum}, mín. ${pair.requiredSum}): " +
+                        "${pair.player1.name} (${pair.player1.age}) y ${pair.player2.name} (${pair.player2.age})",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

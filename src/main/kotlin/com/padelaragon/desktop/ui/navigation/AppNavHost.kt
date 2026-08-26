@@ -118,6 +118,7 @@ fun AppNavHost(multiLeagueContainer: MultiLeagueContainer) {
                 teamId = destination.teamId,
                 teamName = destination.teamName,
                 groupId = destination.groupId,
+                league = destination.league,
                 onBack = { pop() },
                 onTeamClick = { teamId, teamName, groupId ->
                     push(Destination.TeamDetail(destination.league, teamId, teamName, groupId))
