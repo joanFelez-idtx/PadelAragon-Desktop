@@ -1,0 +1,19 @@
+src/main/kotlin/com/padelaragon/desktop/ui/components/StandingsTable.kt
+  s_cb3e4d4ac76a2c::t_005806da2f5a47 40-44,65,110,114-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0f85add792819145c1a6dba43e83f9c7811d494d",
+  "prompts": {},
+  "sessions": {
+    "s_cb3e4d4ac76a2c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_cb3e4d4ac76a2c",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
