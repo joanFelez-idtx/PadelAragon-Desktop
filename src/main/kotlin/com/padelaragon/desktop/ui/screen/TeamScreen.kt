@@ -794,6 +794,7 @@ private fun CouplesGeneratorCard(
     var result by remember(players) {
         mutableStateOf<GeneratePossibleCouplesUseCase.Result?>(null)
     }
+    var currentPage by remember(players) { mutableStateOf(0) }
     val useCase = remember { GeneratePossibleCouplesUseCase() }
 
     Card(
@@ -851,7 +852,10 @@ private fun CouplesGeneratorCard(
             )
 
             Button(
-                onClick = { result = useCase(selectedAgedPlayers, gender) },
+                onClick = {
+                    result = useCase(selectedAgedPlayers, gender)
+                    currentPage = 0
+                },
                 enabled = selectedPlayerNames.size >= GeneratePossibleCouplesUseCase.MIN_REQUIRED_PLAYERS,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -886,20 +890,48 @@ private fun CouplesGeneratorCard(
                     )
                 }
                 is GeneratePossibleCouplesUseCase.Result.Success -> {
-                    val shown = r.combinations.take(MAX_DISPLAYED_COMBINATIONS)
+                    val pageCount = (r.combinations.size + PAGE_SIZE - 1) / PAGE_SIZE
+                    val page = currentPage.coerceIn(0, (pageCount - 1).coerceAtLeast(0))
+                    val pageItems = r.combinations
+                        .drop(page * PAGE_SIZE)
+                        .take(PAGE_SIZE)
+
                     Text(
-                        text = if (r.combinations.size > shown.size) {
-                            "${r.combinations.size} combinaciones posibles · mostrando las " +
-                                "${shown.size} más ajustadas (menor suma total de edad)"
-                        } else {
-                            "${r.combinations.size} combinación(es) posible(s)"
-                        },
+                        text = "${r.combinations.size} combinación(es) posible(s) · " +
+                            "ordenadas de más ajustada a más holgada",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
-                    shown.forEachIndexed { index, combo ->
-                        CoupleCombinationCard(index = index + 1, combination = combo)
+
+                    pageItems.forEachIndexed { index, combo ->
+                        CoupleCombinationCard(index = page * PAGE_SIZE + index + 1, combination = combo)
+                    }
+
+                    if (pageCount > 1) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = { currentPage = (page - 1).coerceAtLeast(0) },
+                                enabled = page > 0
+                            ) {
+                                Text("← Anterior")
+                            }
+                            Text(
+                                text = "Página ${page + 1} de $pageCount",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Button(
+                                onClick = { currentPage = (page + 1).coerceAtMost(pageCount - 1) },
+                                enabled = page < pageCount - 1
+                            ) {
+                                Text("Siguiente →")
+                            }
+                        }
                     }
                 }
             }
@@ -907,7 +939,7 @@ private fun CouplesGeneratorCard(
     }
 }
 
-private const val MAX_DISPLAYED_COMBINATIONS = 50
+private const val PAGE_SIZE = 10
 
 @Composable
 private fun CoupleCombinationCard(index: Int, combination: CoupleCombination) {
