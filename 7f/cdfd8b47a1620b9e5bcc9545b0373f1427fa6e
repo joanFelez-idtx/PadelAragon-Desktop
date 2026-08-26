@@ -1,0 +1,23 @@
+src/main/kotlin/com/padelaragon/desktop/ui/components/StandingsTable.kt
+  s_e5bdc39b7ac7f3::t_0010ccaf11be11 3,20,22,47,51-63,65-70
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupDetailScreen.kt
+  s_e5bdc39b7ac7f3::t_19ebe3fdd56901 8,195-214,216-221
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupsMasterDetailScreen.kt
+  s_e5bdc39b7ac7f3::t_777b8dc7656b78 5-6,19,156,158,160-161,200-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7fcdfd8b47a1620b9e5bcc9545b0373f1427fa6e",
+  "prompts": {},
+  "sessions": {
+    "s_e5bdc39b7ac7f3": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_e5bdc39b7ac7f3",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
