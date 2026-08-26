@@ -37,6 +37,11 @@ private val COL_POS = 36.dp
 private val COL_TEAM = 160.dp
 private val COL_STAT = 40.dp
 
+private val HighlightFirstPlace = Color(0xFFC8E6C9) // light green
+private val HighlightPodium = Color(0xFFBBDEFB) // light blue (2nd & 3rd)
+private val HighlightDangerZone = Color(0xFFFFF9C4) // light yellow (above last)
+private val HighlightLastPlace = Color(0xFFFFCDD2) // light red
+
 @Composable
 fun StandingsTable(
     standings: List<StandingRow>,
@@ -57,6 +62,7 @@ fun StandingsTable(
                     StandingsDataRow(
                         row = row,
                         isEvenRow = index % 2 == 0,
+                        totalTeams = standings.size,
                         onTeamClick = onTeamClick,
                         scrollState = scrollState
                     )
@@ -101,13 +107,18 @@ private fun StandingsHeaderRow(scrollState: androidx.compose.foundation.ScrollSt
 private fun StandingsDataRow(
     row: StandingRow,
     isEvenRow: Boolean,
+    totalTeams: Int,
     onTeamClick: ((teamId: Int, teamName: String) -> Unit)? = null,
     scrollState: androidx.compose.foundation.ScrollState
 ) {
-    val rowBackground = if (isEvenRow) {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
-    } else {
-        Color.Transparent
+    val position = row.position
+    val rowBackground = when {
+        position == 1 -> HighlightFirstPlace
+        totalTeams > 0 && position == totalTeams -> HighlightLastPlace
+        totalTeams > 1 && position == totalTeams - 1 -> HighlightDangerZone
+        position == 2 || position == 3 -> HighlightPodium
+        isEvenRow -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
+        else -> Color.Transparent
     }
 
     Row(
