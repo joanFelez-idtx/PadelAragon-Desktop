@@ -97,6 +97,7 @@ fun AppNavHost(container: AppContainer) {
         is Destination.PlayerDetail -> {
             PlayerDetailScreen(
                 playerName = destination.playerName,
+                teamId = destination.teamId,
                 onBack = { pop() },
                 viewModelFactory = PlayerDetailViewModelFactory(
                     destination.playerName,

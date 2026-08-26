@@ -36,9 +36,10 @@ import com.padelaragon.desktop.ui.viewmodel.PlayerDetailViewModelFactory
 @Composable
 fun PlayerDetailScreen(
     playerName: String,
+    teamId: Int,
     onBack: () -> Unit,
     viewModelFactory: PlayerDetailViewModelFactory,
-    viewModel: PlayerDetailViewModel = viewModel(key = "player_$playerName", factory = viewModelFactory)
+    viewModel: PlayerDetailViewModel = viewModel(key = "player_${teamId}_$playerName", factory = viewModelFactory)
 ) {
     val stats = viewModel.stats
 
