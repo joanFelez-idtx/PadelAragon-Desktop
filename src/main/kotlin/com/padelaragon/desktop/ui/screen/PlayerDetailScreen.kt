@@ -1,14 +1,18 @@
 package com.padelaragon.desktop.ui.screen
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,6 +35,7 @@ import com.padelaragon.desktop.data.model.PartnerCount
 import com.padelaragon.desktop.data.model.PlayerMatchRecord
 import com.padelaragon.desktop.ui.viewmodel.PlayerDetailViewModel
 import com.padelaragon.desktop.ui.viewmodel.PlayerDetailViewModelFactory
+import com.padelaragon.desktop.ui.components.visibleScrollbarStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,28 +73,41 @@ fun PlayerDetailScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        LazyColumn(
+        val listState = rememberLazyListState()
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(innerPadding)
         ) {
-            item {
-                MatchesWonLostCard(matchesWon = stats.matchesWon, matchesLost = stats.matchesLost, winRate = stats.winRate)
-            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize().padding(end = 12.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    MatchesWonLostCard(matchesWon = stats.matchesWon, matchesLost = stats.matchesLost, winRate = stats.winRate)
+                }
 
-            item {
-                GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost, gameWinRate = stats.gameWinRate)
-            }
+                item {
+                    GamesWonLostCard(gamesWon = stats.gamesWon, gamesLost = stats.gamesLost, gameWinRate = stats.gameWinRate)
+                }
 
-            item {
-                TopPartnersCard(topPartners = stats.topPartners)
-            }
+                item {
+                    TopPartnersCard(topPartners = stats.topPartners)
+                }
 
-            item {
-                MatchHistoryCard(matches = stats.matches)
+                item {
+                    MatchHistoryCard(matches = stats.matches)
+                }
             }
+            VerticalScrollbar(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(listState),
+                style = visibleScrollbarStyle()
+            )
         }
     }
 }

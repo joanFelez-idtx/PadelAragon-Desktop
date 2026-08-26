@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -143,6 +144,8 @@ fun TeamScreen(
                 val playedMatches = uiState.matches.filter { it.localScore != "--" }
                 val pendingMatches = uiState.matches.filter { it.localScore == "--" }
                 val nextMatch = pendingMatches.firstOrNull()
+
+                LaunchedEffect(Unit) { viewModel.loadAllMatchDetails() }
 
                 Column(modifier = Modifier.fillMaxSize()) {
                     ScrollableTabRow(
@@ -263,6 +266,9 @@ fun TeamScreen(
                                                 } else {
                                                     selectedPlayerNames + name
                                                 }
+                                            },
+                                            onPlayerClick = { playerName ->
+                                                onPlayerClick(playerName, uiState.matchDetails, playedMatches)
                                             }
                                         )
                                     }
@@ -385,8 +391,6 @@ fun TeamScreen(
                         }
 
                         4 -> {
-                            LaunchedEffect(Unit) { viewModel.loadAllMatchDetails() }
-
                             if (uiState.isLoadingStats) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -662,7 +666,8 @@ private fun TeamDetailCard(
     detail: TeamDetail,
     showCheckboxes: Boolean = false,
     selectedPlayerNames: Set<String> = emptySet(),
-    onToggleSelection: (String) -> Unit = {}
+    onToggleSelection: (String) -> Unit = {},
+    onPlayerClick: ((String) -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -768,7 +773,16 @@ private fun TeamDetailCard(
                             text = player.name,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.weight(3f)
+                            textDecoration = if (onPlayerClick != null) TextDecoration.Underline else TextDecoration.None,
+                            modifier = Modifier
+                                .weight(3f)
+                                .then(
+                                    if (onPlayerClick != null) {
+                                        Modifier.clickable { onPlayerClick(player.name) }
+                                    } else {
+                                        Modifier
+                                    }
+                                )
                         )
                         Text(
                             text = player.points ?: "-",
