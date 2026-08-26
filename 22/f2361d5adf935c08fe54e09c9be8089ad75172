@@ -1,0 +1,25 @@
+src/main/kotlin/com/padelaragon/desktop/ui/components/StandingsTable.kt
+  s_c3f95bb185b521::t_6c49aa1d539132 69-70
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupDetailScreen.kt
+  s_c3f95bb185b521::t_5fefd3db59c5cf 220-221
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupsMasterDetailScreen.kt
+  s_c3f95bb185b521::t_3533e59a34f5d6 204-205
+src/main/kotlin/com/padelaragon/desktop/ui/components/ScrollbarStyleExt.kt
+  s_c3f95bb185b521::t_ae467f0e194b00 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "22f2361d5adf935c08fe54e09c9be8089ad75172",
+  "prompts": {},
+  "sessions": {
+    "s_c3f95bb185b521": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "349169dc-08b0-4ba3-b8f4-a0e35318ee98",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
