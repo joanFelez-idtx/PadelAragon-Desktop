@@ -267,10 +267,20 @@ fun TeamScreen(
                                                     selectedPlayerNames + name
                                                 }
                                             },
-                                            onPlayerClick = { playerName ->
+                                            onPlayerClick = if (uiState.isLoadingStats) {
+                                                null
+                                            } else { playerName ->
                                                 onPlayerClick(playerName, uiState.matchDetails, playedMatches)
                                             }
                                         )
+                                        if (uiState.isLoadingStats) {
+                                            Text(
+                                                text = "Cargando estadísticas de jugadores…",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.padding(start = 12.dp, top = 4.dp)
+                                            )
+                                        }
                                     }
                                     if (isVeteranos) {
                                         item {
