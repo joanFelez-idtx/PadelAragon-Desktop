@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -17,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -273,6 +276,9 @@ private fun TopPartnersCard(topPartners: List<PartnerCount>) {
 
 @Composable
 private fun MatchHistoryCard(matches: List<PlayerMatchRecord>) {
+    val homeMatches = matches.filter { it.isHome }
+    val awayMatches = matches.filter { !it.isHome }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -308,11 +314,62 @@ private fun MatchHistoryCard(matches: List<PlayerMatchRecord>) {
             } else {
                 HorizontalDivider(color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f))
 
-                matches.forEachIndexed { index, match ->
-                    MatchHistoryRow(match)
-                    if (index != matches.lastIndex) {
-                        HorizontalDivider(color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.15f))
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    MatchHistoryColumn(
+                        title = "Local",
+                        matches = homeMatches,
+                        modifier = Modifier.weight(1f)
+                    )
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+                    )
+                    MatchHistoryColumn(
+                        title = "Visitante",
+                        matches = awayMatches,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MatchHistoryColumn(
+    title: String,
+    matches: List<PlayerMatchRecord>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = "$title (${matches.size})",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.15f))
+
+        if (matches.isEmpty()) {
+            Text(
+                text = "Sin partidos",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.6f),
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        } else {
+            matches.forEachIndexed { index, match ->
+                MatchHistoryRow(match)
+                if (index != matches.lastIndex) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.12f))
                 }
             }
         }
@@ -336,7 +393,6 @@ private fun MatchHistoryRow(match: PlayerMatchRecord) {
                 text = buildString {
                     append("Jornada ${match.jornada}")
                     if (!match.date.isNullOrBlank()) append(" · ${match.date}")
-                    append(if (match.isHome) " · Local" else " · Visitante")
                 },
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
