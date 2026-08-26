@@ -1,0 +1,19 @@
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  s_256d0f5dd38c61::t_f2d54e1e31c097 388-389,665,771
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2547e18b10b3e2888b2759c4ca61d5b46372f5ed",
+  "prompts": {},
+  "sessions": {
+    "s_256d0f5dd38c61": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_256d0f5dd38c61",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
