@@ -236,6 +236,10 @@ fun TeamScreen(
                         }
 
                         1 -> {
+                            val isVeteranos = league == League.VETERANOS
+                            var selectedPlayerNames by remember(uiState.teamDetail) {
+                                mutableStateOf(setOf<String>())
+                            }
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 16.dp),
@@ -243,14 +247,26 @@ fun TeamScreen(
                             ) {
                                 uiState.teamDetail?.let { detail ->
                                     item {
-                                        TeamDetailCard(detail = detail)
+                                        TeamDetailCard(
+                                            detail = detail,
+                                            showCheckboxes = isVeteranos,
+                                            selectedPlayerNames = selectedPlayerNames,
+                                            onToggleSelection = { name ->
+                                                selectedPlayerNames = if (name in selectedPlayerNames) {
+                                                    selectedPlayerNames - name
+                                                } else {
+                                                    selectedPlayerNames + name
+                                                }
+                                            }
+                                        )
                                     }
-                                    if (league == League.VETERANOS) {
+                                    if (isVeteranos) {
                                         item {
                                             CouplesGeneratorCard(
                                                 players = detail.players,
                                                 groupName = uiState.groupName,
-                                                category = detail.category
+                                                category = detail.category,
+                                                selectedPlayerNames = selectedPlayerNames
                                             )
                                         }
                                     }
@@ -605,7 +621,12 @@ private fun StandingSummaryCard(standing: StandingRow) {
 }
 
 @Composable
-private fun TeamDetailCard(detail: TeamDetail) {
+private fun TeamDetailCard(
+    detail: TeamDetail,
+    showCheckboxes: Boolean = false,
+    selectedPlayerNames: Set<String> = emptySet(),
+    onToggleSelection: (String) -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -655,6 +676,9 @@ private fun TeamDetailCard(detail: TeamDetail) {
                         .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (showCheckboxes) {
+                        Spacer(modifier = Modifier.width(40.dp))
+                    }
                     Spacer(modifier = Modifier.width(20.dp))
                     Text(
                         text = "Jugador",
@@ -688,6 +712,15 @@ private fun TeamDetailCard(detail: TeamDetail) {
                             .padding(vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        if (showCheckboxes) {
+                            val ageAvailable = playerAge(player) != null
+                            Checkbox(
+                                checked = player.name in selectedPlayerNames,
+                                onCheckedChange = { if (ageAvailable) onToggleSelection(player.name) },
+                                enabled = ageAvailable,
+                                modifier = Modifier.width(40.dp)
+                            )
+                        }
                         Text(
                             text = if (player.isCaptain) "⭐" else "",
                             style = MaterialTheme.typography.bodySmall,
@@ -749,13 +782,15 @@ private fun playerAge(player: Player): Int? {
 private fun CouplesGeneratorCard(
     players: List<Player>,
     groupName: String?,
-    category: String?
+    category: String?,
+    selectedPlayerNames: Set<String>
 ) {
     val gender = resolveGender(groupName, category)
-    val eligiblePlayers = remember(players) {
-        players.mapNotNull { player -> playerAge(player)?.let { age -> player to age } }
+    val selectedAgedPlayers = remember(players, selectedPlayerNames) {
+        players
+            .filter { it.name in selectedPlayerNames }
+            .mapNotNull { player -> playerAge(player)?.let { age -> AgedPlayer(player.name, age) } }
     }
-    var selected by remember(players) { mutableStateOf(setOf<String>()) }
     var result by remember(players) {
         mutableStateOf<GeneratePossibleCouplesUseCase.Result?>(null)
     }
@@ -807,54 +842,16 @@ private fun CouplesGeneratorCard(
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
             )
 
-            if (eligiblePlayers.isEmpty()) {
-                Text(
-                    text = "Ningún jugador de la plantilla tiene año de nacimiento disponible.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-                )
-                return@Column
-            }
-
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
+            Text(
+                text = "Marca en la lista de la plantilla los 6 jugadores que disputarán el " +
+                    "partido (3 parejas). Seleccionados: ${selectedPlayerNames.size}/6.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
             )
 
-            eligiblePlayers.forEach { (player, age) ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            selected = if (player.name in selected) {
-                                selected - player.name
-                            } else {
-                                selected + player.name
-                            }
-                        }
-                        .padding(vertical = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = player.name in selected,
-                        onCheckedChange = { checked ->
-                            selected = if (checked) selected + player.name else selected - player.name
-                        }
-                    )
-                    Text(
-                        text = "${player.name} ($age años)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-            }
-
             Button(
-                onClick = {
-                    val chosen = eligiblePlayers
-                        .filter { (player, _) -> player.name in selected }
-                        .map { (player, age) -> AgedPlayer(player.name, age) }
-                    result = useCase(chosen, gender)
-                },
+                onClick = { result = useCase(selectedAgedPlayers, gender) },
+                enabled = selectedPlayerNames.size == GeneratePossibleCouplesUseCase.REQUIRED_PLAYER_COUNT,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Generar parejas")
@@ -870,10 +867,9 @@ private fun CouplesGeneratorCard(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
-                GeneratePossibleCouplesUseCase.Result.TooManyPlayersSelected -> {
+                GeneratePossibleCouplesUseCase.Result.RequiresExactlySixPlayers -> {
                     Text(
-                        text = "Hay demasiados jugadores seleccionados para calcular todas las combinaciones. " +
-                            "Selecciona 16 jugadores como máximo.",
+                        text = "Selecciona exactamente 6 jugadores en la plantilla (llevas ${selectedPlayerNames.size}).",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.error

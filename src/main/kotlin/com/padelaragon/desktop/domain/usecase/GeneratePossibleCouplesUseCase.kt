@@ -26,58 +26,54 @@ data class CoupleCombination(
 )
 
 /**
- * Generates every possible way to split a set of selected players into 3 disjoint pairs
- * ("parejas") such that each pair's combined age meets or exceeds the minimum required for
- * its tier, per the following rules (age-sum thresholds, in ascending order):
+ * Generates every possible way to split exactly 6 selected players (i.e. a full match lineup:
+ * 3 pairs) into 3 disjoint pairs ("parejas") such that each pair's combined age meets or
+ * exceeds the minimum required for its tier, per the following rules (age-sum thresholds, in
+ * ascending order):
  *
  * - Masculina: Pareja 1 >= 95, Pareja 2 >= 100, Pareja 3 >= 105
  * - Femenina:  Pareja 1 >= 80, Pareja 2 >= 85,  Pareja 3 >= 90
  *
- * Not all selected players need to be used in a given combination — only 6 are needed per
- * combination (2 per pareja), so combinations are generated across every disjoint 3-pair
- * grouping obtainable from the selected list.
- *
- * To avoid combinatorial explosion, callers should keep the selection reasonably small
- * (recommended <= 16 players); [maxSelectedPlayers] is enforced defensively.
+ * Exactly 6 players must be provided (a match fields 3 pairs = 6 players). Requiring an exact
+ * lineup instead of an arbitrary larger candidate pool keeps the number of results meaningful:
+ * allowing any subset of a larger selection causes a combinatorial explosion of largely
+ * redundant groupings once age thresholds are easily cleared.
  */
-class GeneratePossibleCouplesUseCase(
-    private val maxSelectedPlayers: Int = 16
-) {
+class GeneratePossibleCouplesUseCase {
     companion object {
         val MASCULINA_THRESHOLDS = listOf(95, 100, 105)
         val FEMENINA_THRESHOLDS = listOf(80, 85, 90)
+        const val REQUIRED_PLAYER_COUNT = 6
     }
 
     sealed interface Result {
         data class Success(val combinations: List<CoupleCombination>) : Result
         object NoCombinationsPossible : Result
-        object TooManyPlayersSelected : Result
+        object RequiresExactlySixPlayers : Result
     }
 
     operator fun invoke(players: List<AgedPlayer>, gender: Gender): Result {
-        if (players.size > maxSelectedPlayers) return Result.TooManyPlayersSelected
+        if (players.size != REQUIRED_PLAYER_COUNT) return Result.RequiresExactlySixPlayers
 
         val thresholds = if (gender == Gender.MASCULINA) MASCULINA_THRESHOLDS else FEMENINA_THRESHOLDS
         val combinations = mutableListOf<CoupleCombination>()
         val seenKeys = HashSet<String>()
 
-        if (players.size >= 6) {
-            findTriplesOfPairs(players) { threePairs ->
-                // Sort the 3 pairs ascending by sum; a valid assignment exists iff each sum
-                // (once sorted) meets its corresponding threshold (ascending too).
-                val sortedPairs = threePairs.sortedBy { it.first.age + it.second.age }
-                val sums = sortedPairs.map { it.first.age + it.second.age }
-                val isValid = sums.indices.all { i -> sums[i] >= thresholds[i] }
-                if (isValid) {
-                    val key = sortedPairs.joinToString("|") { (a, b) ->
-                        listOf(a.name, b.name).sorted().joinToString(",")
+        findTriplesOfPairs(players) { threePairs ->
+            // Sort the 3 pairs ascending by sum; a valid assignment exists iff each sum
+            // (once sorted) meets its corresponding threshold (ascending too).
+            val sortedPairs = threePairs.sortedBy { it.first.age + it.second.age }
+            val sums = sortedPairs.map { it.first.age + it.second.age }
+            val isValid = sums.indices.all { i -> sums[i] >= thresholds[i] }
+            if (isValid) {
+                val key = sortedPairs.joinToString("|") { (a, b) ->
+                    listOf(a.name, b.name).sorted().joinToString(",")
+                }
+                if (seenKeys.add(key)) {
+                    val suggestedPairs = sortedPairs.mapIndexed { index, (a, b) ->
+                        SuggestedPair(a, b, tierIndex = index, requiredSum = thresholds[index])
                     }
-                    if (seenKeys.add(key)) {
-                        val suggestedPairs = sortedPairs.mapIndexed { index, (a, b) ->
-                            SuggestedPair(a, b, tierIndex = index, requiredSum = thresholds[index])
-                        }
-                        combinations += CoupleCombination(suggestedPairs)
-                    }
+                    combinations += CoupleCombination(suggestedPairs)
                 }
             }
         }

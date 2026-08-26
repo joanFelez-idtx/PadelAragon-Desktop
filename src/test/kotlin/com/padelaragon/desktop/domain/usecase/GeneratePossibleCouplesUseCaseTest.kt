@@ -10,12 +10,19 @@ class GeneratePossibleCouplesUseCaseTest {
     private val useCase = GeneratePossibleCouplesUseCase()
 
     @Test
-    fun `returns NoCombinationsPossible when fewer than 6 players selected`() {
+    fun `returns RequiresExactlySixPlayers when fewer than 6 players selected`() {
         val players = listOf(
             AgedPlayer("A", 50), AgedPlayer("B", 50), AgedPlayer("C", 50)
         )
         val result = useCase(players, Gender.MASCULINA)
-        assertEquals(GeneratePossibleCouplesUseCase.Result.NoCombinationsPossible, result)
+        assertEquals(GeneratePossibleCouplesUseCase.Result.RequiresExactlySixPlayers, result)
+    }
+
+    @Test
+    fun `returns RequiresExactlySixPlayers when more than 6 players selected`() {
+        val players = (1..7).map { AgedPlayer("P$it", 50) }
+        val result = useCase(players, Gender.MASCULINA)
+        assertEquals(GeneratePossibleCouplesUseCase.Result.RequiresExactlySixPlayers, result)
     }
 
     @Test
@@ -68,23 +75,14 @@ class GeneratePossibleCouplesUseCaseTest {
     }
 
     @Test
-    fun `returns TooManyPlayersSelected beyond limit`() {
-        val useCaseSmallLimit = GeneratePossibleCouplesUseCase(maxSelectedPlayers = 4)
-        val players = (1..5).map { AgedPlayer("P$it", 50) }
-        val result = useCaseSmallLimit(players, Gender.MASCULINA)
-        assertEquals(GeneratePossibleCouplesUseCase.Result.TooManyPlayersSelected, result)
-    }
-
-    @Test
-    fun `allows leaving out extra selected players not part of a valid combination`() {
-        // 8 players selected, only 6 needed to form a valid combination; extras must not block it.
+    fun `requires exactly six even if extra valid players are provided`() {
         val players = listOf(
-            AgedPlayer("A", 45), AgedPlayer("B", 50), // 95
-            AgedPlayer("C", 48), AgedPlayer("D", 52), // 100
-            AgedPlayer("E", 50), AgedPlayer("F", 55), // 105
-            AgedPlayer("G", 20), AgedPlayer("H", 20)  // too young, should just be excluded
+            AgedPlayer("A", 45), AgedPlayer("B", 50),
+            AgedPlayer("C", 48), AgedPlayer("D", 52),
+            AgedPlayer("E", 50), AgedPlayer("F", 55),
+            AgedPlayer("G", 60), AgedPlayer("H", 60)
         )
-        val result = useCase(players, Gender.MASCULINA) as GeneratePossibleCouplesUseCase.Result.Success
-        assertTrue(result.combinations.isNotEmpty())
+        val result = useCase(players, Gender.MASCULINA)
+        assertEquals(GeneratePossibleCouplesUseCase.Result.RequiresExactlySixPlayers, result)
     }
 }
