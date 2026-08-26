@@ -1,0 +1,77 @@
+build.gradle.kts
+  s_2e86fe9b7a17af::t_844be098d52785 1
+src/main/kotlin/com/padelaragon/desktop/Main.kt
+  s_2e86fe9b7a17af::t_3cbe93b409f45f 10,25,34
+src/main/kotlin/com/padelaragon/desktop/data/favorites/FavoritesManager.kt
+  s_2e86fe9b7a17af::t_6a09f2dc048e4e 3,13-14,16,46-47,49,55-59,62
+src/main/kotlin/com/padelaragon/desktop/data/local/AppDatabase.kt
+  s_2e86fe9b7a17af::t_de37b4481449db 35,62
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/JornadaDao.kt
+  s_2e86fe9b7a17af::t_13d65161239910 11-12,17-18
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/LeagueGroupDao.kt
+  s_2e86fe9b7a17af::t_18c97b092e1405 11-12,17-18
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/MatchResultDao.kt
+  s_2e86fe9b7a17af::t_1f82da5bfd0dfd 11-12,14-15,20-21,23-24
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/StandingRowDao.kt
+  s_2e86fe9b7a17af::t_e53fdabfedbd1a 11-12,17-18
+src/main/kotlin/com/padelaragon/desktop/data/local/dao/TeamDetailDao.kt
+  s_2e86fe9b7a17af::t_f96048587b0774 13-14,16-17,25-26,31
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/JornadaEntity.kt
+  s_2e86fe9b7a17af::t_0e4a72bcaf0c27 5,7
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/LeagueGroupEntity.kt
+  s_2e86fe9b7a17af::t_adeaca98aa367c 7,9-10,25-26
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/MatchResultEntity.kt
+  s_2e86fe9b7a17af::t_6b154d370df4f3 6,8,35-36
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/PlayerEntity.kt
+  s_2e86fe9b7a17af::t_1c8aa6292b9f17 6,8,23-24
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/StandingRowEntity.kt
+  s_2e86fe9b7a17af::t_48dfceeab70520 6,8,43-44
+src/main/kotlin/com/padelaragon/desktop/data/local/entity/TeamDetailEntity.kt
+  s_2e86fe9b7a17af::t_3f7f8456bc0a74 5,7-8
+src/main/kotlin/com/padelaragon/desktop/data/model/League.kt
+  s_2e86fe9b7a17af::t_62af670054b36b 1-15
+src/main/kotlin/com/padelaragon/desktop/data/repository/GroupRepository.kt
+  s_2e86fe9b7a17af::t_e8c76a8ad05e29 6,15,28,34,40-41,48
+src/main/kotlin/com/padelaragon/desktop/data/repository/MatchResultRepository.kt
+  s_2e86fe9b7a17af::t_32d6ce9caa3c7f 5,17,33,39,44-45,52,67,82,92-93,137
+src/main/kotlin/com/padelaragon/desktop/data/repository/StandingsRepository.kt
+  s_2e86fe9b7a17af::t_17a1882f9ed731 4,12,22,25,37,42-43,51-52
+src/main/kotlin/com/padelaragon/desktop/data/repository/TeamDetailRepository.kt
+  s_2e86fe9b7a17af::t_5599779b9d7e44 7,23,36,38,50-52,176-177
+src/main/kotlin/com/padelaragon/desktop/di/AppContainer.kt
+  s_2e86fe9b7a17af::t_1988ee606ab759 5,21-26,28-29,31,33,45,48-59
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/StartupPreloader.kt
+  s_2e86fe9b7a17af::t_240a6cb7b54c6d 1-55
+src/main/kotlin/com/padelaragon/desktop/ui/navigation/AppNavHost.kt
+  s_2e86fe9b7a17af::t_539585863ba80b 4-5,10,14-15,17,19,29,34-36,38,47-70,84-87,89-92,95-97,116,122-124,126,128,144,155
+src/main/kotlin/com/padelaragon/desktop/ui/screen/GroupsMasterDetailScreen.kt
+  s_2e86fe9b7a17af::t_06cff6ad5cdcc4 29,66-69,88-99
+src/main/kotlin/com/padelaragon/desktop/ui/screen/LeagueChooserScreen.kt
+  s_2e86fe9b7a17af::t_37f299da182664 1-81
+src/main/kotlin/com/padelaragon/desktop/ui/screen/PlayerDetailScreen.kt
+  s_2e86fe9b7a17af::t_ee7cb938fd4701 42-43
+src/main/kotlin/com/padelaragon/desktop/ui/screen/StartupLoadingScreen.kt
+  s_2e86fe9b7a17af::t_735756774f4440 1-64
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  s_2e86fe9b7a17af::t_0e8bdd68fdc99c 67-68
+src/test/kotlin/com/padelaragon/desktop/data/favorites/FavoritesManagerTest.kt
+  s_2e86fe9b7a17af::t_01cf44f9481246 1-50
+src/test/kotlin/com/padelaragon/desktop/domain/usecase/StartupPreloaderTest.kt
+  s_2e86fe9b7a17af::t_bfed8b18deb5c9 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "594b4d3e056dcc55d8b4223a5212d9e616d411ba",
+  "prompts": {},
+  "sessions": {
+    "s_2e86fe9b7a17af": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "s_2e86fe9b7a17af",
+        "model": "unknown"
+      },
+      "human_author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
