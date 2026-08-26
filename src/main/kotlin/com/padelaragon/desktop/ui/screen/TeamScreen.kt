@@ -843,15 +843,16 @@ private fun CouplesGeneratorCard(
             )
 
             Text(
-                text = "Marca en la lista de la plantilla los 6 jugadores que disputarán el " +
-                    "partido (3 parejas). Seleccionados: ${selectedPlayerNames.size}/6.",
+                text = "Marca en la lista de la plantilla los jugadores disponibles para el " +
+                    "partido (mínimo 6). Se generarán todas las combinaciones de 3 parejas " +
+                    "posibles con esos jugadores. Seleccionados: ${selectedPlayerNames.size}.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
             )
 
             Button(
                 onClick = { result = useCase(selectedAgedPlayers, gender) },
-                enabled = selectedPlayerNames.size == GeneratePossibleCouplesUseCase.REQUIRED_PLAYER_COUNT,
+                enabled = selectedPlayerNames.size >= GeneratePossibleCouplesUseCase.MIN_REQUIRED_PLAYERS,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Generar parejas")
@@ -867,22 +868,37 @@ private fun CouplesGeneratorCard(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
-                GeneratePossibleCouplesUseCase.Result.RequiresExactlySixPlayers -> {
+                GeneratePossibleCouplesUseCase.Result.NotEnoughPlayersSelected -> {
                     Text(
-                        text = "Selecciona exactamente 6 jugadores en la plantilla (llevas ${selectedPlayerNames.size}).",
+                        text = "Selecciona al menos 6 jugadores en la plantilla (llevas ${selectedPlayerNames.size}).",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                GeneratePossibleCouplesUseCase.Result.TooManyPlayersSelected -> {
+                    Text(
+                        text = "Hay demasiados jugadores seleccionados para calcular todas las combinaciones. " +
+                            "Selecciona 16 jugadores como máximo.",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.error
                     )
                 }
                 is GeneratePossibleCouplesUseCase.Result.Success -> {
+                    val shown = r.combinations.take(MAX_DISPLAYED_COMBINATIONS)
                     Text(
-                        text = "${r.combinations.size} combinación(es) posible(s)",
+                        text = if (r.combinations.size > shown.size) {
+                            "${r.combinations.size} combinaciones posibles · mostrando las " +
+                                "${shown.size} más ajustadas (menor suma total de edad)"
+                        } else {
+                            "${r.combinations.size} combinación(es) posible(s)"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
-                    r.combinations.forEachIndexed { index, combo ->
+                    shown.forEachIndexed { index, combo ->
                         CoupleCombinationCard(index = index + 1, combination = combo)
                     }
                 }
@@ -890,6 +906,8 @@ private fun CouplesGeneratorCard(
         }
     }
 }
+
+private const val MAX_DISPLAYED_COMBINATIONS = 50
 
 @Composable
 private fun CoupleCombinationCard(index: Int, combination: CoupleCombination) {

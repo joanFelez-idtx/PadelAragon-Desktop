@@ -23,37 +23,49 @@ data class SuggestedPair(
 /** A full valid combination of 3 disjoint pairs, one per tier, sorted by tier index. */
 data class CoupleCombination(
     val pairs: List<SuggestedPair>
-)
+) {
+    /** Total combined age across all 3 pairs; lower means the combination is more "tight" / borderline. */
+    val totalAgeSum: Int get() = pairs.sumOf { it.ageSum }
+}
 
 /**
- * Generates every possible way to split exactly 6 selected players (i.e. a full match lineup:
- * 3 pairs) into 3 disjoint pairs ("parejas") such that each pair's combined age meets or
- * exceeds the minimum required for its tier, per the following rules (age-sum thresholds, in
- * ascending order):
+ * Generates every possible way to split a pool of selected (available) players into 3 disjoint
+ * pairs ("parejas") such that each pair's combined age meets or exceeds the minimum required for
+ * its tier, per the following rules (age-sum thresholds, in ascending order):
  *
  * - Masculina: Pareja 1 >= 95, Pareja 2 >= 100, Pareja 3 >= 105
  * - Femenina:  Pareja 1 >= 80, Pareja 2 >= 85,  Pareja 3 >= 90
  *
- * Exactly 6 players must be provided (a match fields 3 pairs = 6 players). Requiring an exact
- * lineup instead of an arbitrary larger candidate pool keeps the number of results meaningful:
- * allowing any subset of a larger selection causes a combinatorial explosion of largely
- * redundant groupings once age thresholds are easily cleared.
+ * This is meant to answer "given the players I actually have available, what lineups can I
+ * field?" — so it does not require the selection to be exactly 6 players; any 6 of the selected
+ * pool can be used per combination, leaving the rest unused for that particular suggestion.
+ *
+ * Results are sorted with the tightest (lowest total age sum) combinations first, since those
+ * are the most informative/borderline ones; combinations that trivially clear every threshold
+ * by a wide margin are pushed to the end.
+ *
+ * To keep the enumeration itself tractable, callers should keep the selection reasonably small
+ * (recommended <= [maxSelectedPlayers]); beyond that, [Result.TooManyPlayersSelected] is returned.
  */
-class GeneratePossibleCouplesUseCase {
+class GeneratePossibleCouplesUseCase(
+    private val maxSelectedPlayers: Int = 16
+) {
     companion object {
         val MASCULINA_THRESHOLDS = listOf(95, 100, 105)
         val FEMENINA_THRESHOLDS = listOf(80, 85, 90)
-        const val REQUIRED_PLAYER_COUNT = 6
+        const val MIN_REQUIRED_PLAYERS = 6
     }
 
     sealed interface Result {
         data class Success(val combinations: List<CoupleCombination>) : Result
         object NoCombinationsPossible : Result
-        object RequiresExactlySixPlayers : Result
+        object NotEnoughPlayersSelected : Result
+        object TooManyPlayersSelected : Result
     }
 
     operator fun invoke(players: List<AgedPlayer>, gender: Gender): Result {
-        if (players.size != REQUIRED_PLAYER_COUNT) return Result.RequiresExactlySixPlayers
+        if (players.size < MIN_REQUIRED_PLAYERS) return Result.NotEnoughPlayersSelected
+        if (players.size > maxSelectedPlayers) return Result.TooManyPlayersSelected
 
         val thresholds = if (gender == Gender.MASCULINA) MASCULINA_THRESHOLDS else FEMENINA_THRESHOLDS
         val combinations = mutableListOf<CoupleCombination>()
@@ -78,7 +90,8 @@ class GeneratePossibleCouplesUseCase {
             }
         }
 
-        return if (combinations.isEmpty()) Result.NoCombinationsPossible else Result.Success(combinations)
+        if (combinations.isEmpty()) return Result.NoCombinationsPossible
+        return Result.Success(combinations.sortedBy { it.totalAgeSum })
     }
 
     /**
