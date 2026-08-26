@@ -1,0 +1,20 @@
+src/main/kotlin/com/padelaragon/desktop/domain/usecase/GeneratePossibleCouplesUseCase.kt
+  h_8f9a3a7c055732 1-122
+src/main/kotlin/com/padelaragon/desktop/ui/navigation/AppNavHost.kt
+  h_8f9a3a7c055732 121
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  h_8f9a3a7c055732 19,21,40,50-51,57-59,64,72,248-256,732-931
+src/test/kotlin/com/padelaragon/desktop/domain/usecase/GeneratePossibleCouplesUseCaseTest.kt
+  h_8f9a3a7c055732 1-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "50b3dd44add5253b1d24b2f0a8356b652e495cf7",
+  "prompts": {},
+  "humans": {
+    "h_8f9a3a7c055732": {
+      "author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
