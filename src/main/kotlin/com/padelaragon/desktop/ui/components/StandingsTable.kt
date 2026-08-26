@@ -1,5 +1,6 @@
 package com.padelaragon.desktop.ui.components
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,20 +44,30 @@ fun StandingsTable(
     onTeamClick: ((teamId: Int, teamName: String) -> Unit)? = null
 ) {
     val scrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState()
     Column(modifier = modifier) {
         StandingsHeaderRow(scrollState)
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            itemsIndexed(standings) { index, row ->
-                StandingsDataRow(
-                    row = row,
-                    isEvenRow = index % 2 == 0,
-                    onTeamClick = onTeamClick,
-                    scrollState = scrollState
-                )
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize().padding(end = 12.dp)
+            ) {
+                itemsIndexed(standings) { index, row ->
+                    StandingsDataRow(
+                        row = row,
+                        isEvenRow = index % 2 == 0,
+                        onTeamClick = onTeamClick,
+                        scrollState = scrollState
+                    )
+                }
             }
+            VerticalScrollbar(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(lazyListState)
+            )
         }
     }
 }

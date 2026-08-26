@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -191,23 +192,33 @@ fun GroupDetailContent(
                                     )
                                 }
                             } else {
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentPadding = PaddingValues(bottom = 12.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    items(uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()) { match ->
-                                        MatchCard(
-                                            match = match,
-                                            modifier = Modifier.padding(horizontal = 12.dp),
-                                            detail = match.detailUrl?.let { uiState.matchDetails[it] },
-                                            isLoadingDetail = match.detailUrl in uiState.loadingMatchDetails,
-                                            onToggleDetail = match.detailUrl?.let { url -> { viewModel.loadMatchDetail(url) } },
-                                            onTeamClick = { teamId, teamName ->
-                                                onTeamClick(teamId, teamName, groupId)
-                                            }
-                                        )
+                                val matchListState = androidx.compose.foundation.lazy.rememberLazyListState()
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    LazyColumn(
+                                        state = matchListState,
+                                        modifier = Modifier.fillMaxSize().padding(end = 12.dp),
+                                        contentPadding = PaddingValues(bottom = 12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        items(uiState.allMatchResults[uiState.selectedJornada] ?: emptyList()) { match ->
+                                            MatchCard(
+                                                match = match,
+                                                modifier = Modifier.padding(horizontal = 12.dp),
+                                                detail = match.detailUrl?.let { uiState.matchDetails[it] },
+                                                isLoadingDetail = match.detailUrl in uiState.loadingMatchDetails,
+                                                onToggleDetail = match.detailUrl?.let { url -> { viewModel.loadMatchDetail(url) } },
+                                                onTeamClick = { teamId, teamName ->
+                                                    onTeamClick(teamId, teamName, groupId)
+                                                }
+                                            )
+                                        }
                                     }
+                                    androidx.compose.foundation.VerticalScrollbar(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .fillMaxHeight(),
+                                        adapter = androidx.compose.foundation.rememberScrollbarAdapter(matchListState)
+                                    )
                                 }
                             }
                         }
