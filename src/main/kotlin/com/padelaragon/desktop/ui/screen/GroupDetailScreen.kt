@@ -217,7 +217,8 @@ fun GroupDetailContent(
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .fillMaxHeight(),
-                                        adapter = androidx.compose.foundation.rememberScrollbarAdapter(matchListState)
+                                        adapter = androidx.compose.foundation.rememberScrollbarAdapter(matchListState),
+                                        style = com.padelaragon.desktop.ui.components.visibleScrollbarStyle()
                                     )
                                 }
                             }

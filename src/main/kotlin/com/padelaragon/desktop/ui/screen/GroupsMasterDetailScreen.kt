@@ -201,7 +201,8 @@ fun GroupsMasterDetailScreen(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(sidebarListState)
+                    adapter = rememberScrollbarAdapter(sidebarListState),
+                    style = com.padelaragon.desktop.ui.components.visibleScrollbarStyle()
                 )
                 }
                 }

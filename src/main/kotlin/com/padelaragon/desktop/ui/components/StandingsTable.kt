@@ -66,7 +66,8 @@ fun StandingsTable(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(lazyListState)
+                adapter = rememberScrollbarAdapter(lazyListState),
+                style = visibleScrollbarStyle()
             )
         }
     }
