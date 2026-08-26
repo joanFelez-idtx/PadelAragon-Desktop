@@ -1,0 +1,14 @@
+src/main/kotlin/com/padelaragon/desktop/ui/screen/TeamScreen.kt
+  h_8f9a3a7c055732 797,855-858,893-898,900-901,906-934,942
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "68c21355fd6f0e462c9fe68cb1cf3956144fe08c",
+  "prompts": {},
+  "humans": {
+    "h_8f9a3a7c055732": {
+      "author": "joanfelez <joanfa@ext.zara.com>"
+    }
+  }
+}
