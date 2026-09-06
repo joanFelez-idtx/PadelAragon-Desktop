@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -429,87 +428,110 @@ fun TeamScreen(
                                             ),
                                             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                                         ) {
-                                            Column(
+                                            Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(horizontal = 12.dp, vertical = 10.dp),
-                                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                                    .padding(horizontal = 12.dp, vertical = 10.dp)
                                             ) {
-                                                // Group sub-header row (Casa / Fuera)
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(IntrinsicSize.Min),
-                                                    verticalAlignment = Alignment.CenterVertically
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    verticalArrangement = Arrangement.spacedBy(4.dp)
                                                 ) {
-                                                    Spacer(modifier = Modifier.weight(3f))
-                                                    StatsGroupLabel(text = "Casa", weight = STATS_GROUP_WEIGHT)
-                                                    StatsDividerSpace()
-                                                    StatsGroupLabel(text = "Fuera", weight = STATS_GROUP_WEIGHT)
-                                                }
+                                                    // Group sub-header row (Casa / Fuera)
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Spacer(modifier = Modifier.weight(STATS_JUGADOR_WEIGHT))
+                                                        StatsGroupLabel(text = "Casa", weight = STATS_GROUP_WEIGHT)
+                                                        Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                        StatsGroupLabel(text = "Fuera", weight = STATS_GROUP_WEIGHT)
+                                                    }
 
-                                                // Header row
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(IntrinsicSize.Min)
-                                                        .padding(vertical = 4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Text(
-                                                        text = "Jugador",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(3f)
-                                                    )
-                                                    StatsColumnHeader("V")
-                                                    StatsColumnHeader("D")
-                                                    StatsColumnHeader("P1", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                    StatsColumnHeader("P2", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                    StatsColumnHeader("P3", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                    StatsDivider()
-                                                    StatsColumnHeader("V")
-                                                    StatsColumnHeader("D")
-                                                    StatsColumnHeader("P1", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                    StatsColumnHeader("P2", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                    StatsColumnHeader("P3", weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                }
-
-                                                HorizontalDivider(
-                                                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                                                )
-
-                                                // Player rows
-                                                uiState.playerStats.forEach { stats ->
+                                                    // Header row
                                                     Row(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
-                                                            .height(IntrinsicSize.Min)
-                                                            .clickable {
-                                                                onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
-                                                            }
-                                                            .padding(vertical = 2.dp),
+                                                            .padding(vertical = 4.dp),
                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
                                                         Text(
-                                                            text = stats.name,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(3f)
+                                                            text = "Jugador",
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            fontWeight = FontWeight.Bold,
+                                                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
+                                                            modifier = Modifier.weight(STATS_JUGADOR_WEIGHT)
                                                         )
-                                                        StatsColumnValue(stats.home.wins.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.home.losses.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.home.pair1Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                        StatsColumnValue(stats.home.pair2Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                        StatsColumnValue(stats.home.pair3Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                        StatsDivider()
-                                                        StatsColumnValue(stats.away.wins.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.away.losses.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.away.pair1Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                        StatsColumnValue(stats.away.pair2Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
-                                                        StatsColumnValue(stats.away.pair3Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsColumnHeader("V")
+                                                        StatsColumnHeader("D")
+                                                        StatsColumnHeader("P1")
+                                                        StatsColumnHeader("P2")
+                                                        StatsColumnHeader("P3")
+                                                        Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                        StatsColumnHeader("V")
+                                                        StatsColumnHeader("D")
+                                                        StatsColumnHeader("P1")
+                                                        StatsColumnHeader("P2")
+                                                        StatsColumnHeader("P3")
                                                     }
+
+                                                    HorizontalDivider(
+                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+                                                    )
+
+                                                    // Player rows
+                                                    uiState.playerStats.forEach { stats ->
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .clickable {
+                                                                    onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
+                                                                }
+                                                                .padding(vertical = 2.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                text = stats.name,
+                                                                style = MaterialTheme.typography.bodySmall,
+                                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                                modifier = Modifier.weight(STATS_JUGADOR_WEIGHT)
+                                                            )
+                                                            StatsColumnValue(stats.home.wins.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.home.losses.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.home.pair1Count.toString())
+                                                            StatsColumnValue(stats.home.pair2Count.toString())
+                                                            StatsColumnValue(stats.home.pair3Count.toString())
+                                                            Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                            StatsColumnValue(stats.away.wins.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.away.losses.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.away.pair1Count.toString())
+                                                            StatsColumnValue(stats.away.pair2Count.toString())
+                                                            StatsColumnValue(stats.away.pair3Count.toString())
+                                                        }
+                                                    }
+                                                }
+
+                                                // Single continuous red rule separating the Casa/Fuera blocks,
+                                                // overlaid on top of the table so it isn't broken up by the
+                                                // vertical spacing between rows. Its horizontal position is
+                                                // computed with the exact same weights as the columns above,
+                                                // so it lines up with the gap between the two blocks at any
+                                                // card width.
+                                                Row(modifier = Modifier.matchParentSize()) {
+                                                    Spacer(modifier = Modifier.weight(STATS_JUGADOR_WEIGHT + STATS_GROUP_WEIGHT))
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .width(STATS_GROUP_GAP)
+                                                            .fillMaxHeight(),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        VerticalDivider(
+                                                            modifier = Modifier.fillMaxHeight(),
+                                                            thickness = 2.dp,
+                                                            color = Color.Red
+                                                        )
+                                                    }
+                                                    Spacer(modifier = Modifier.weight(STATS_GROUP_WEIGHT))
                                                 }
                                             }
                                         }
@@ -565,15 +587,17 @@ private fun SectionTitle(text: String) {
     )
 }
 
-/**
- * Combined weight of the 5 V/D/P1/P2/P3 columns within one Casa/Fuera group
- * (2 x [STATS_WD_COLUMN_WEIGHT] + 3 x [STATS_PAREJA_COLUMN_WEIGHT]), used to align the
- * "Casa"/"Fuera" group label with the columns beneath it.
- */
-private const val STATS_WD_COLUMN_WEIGHT = 0.6f
-private const val STATS_PAREJA_COLUMN_WEIGHT = 0.45f
-private val STATS_GROUP_WEIGHT =
-    2 * STATS_WD_COLUMN_WEIGHT + 3 * STATS_PAREJA_COLUMN_WEIGHT
+/** Weight of the "Jugador" (player name) column relative to the stat columns. */
+private const val STATS_JUGADOR_WEIGHT = 3f
+
+/** Uniform weight for every V/D/P1/P2/P3 stat column, so spacing is identical across all of them. */
+private const val STATS_COLUMN_WEIGHT = 0.6f
+
+/** Combined weight of the 5 stat columns within one Casa/Fuera group. */
+private val STATS_GROUP_WEIGHT = 5 * STATS_COLUMN_WEIGHT
+
+/** Fixed-width gap between the Casa and Fuera blocks, where the red divider is drawn. */
+private val STATS_GROUP_GAP = 20.dp
 
 /** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
 @Composable
@@ -590,7 +614,7 @@ private fun RowScope.StatsGroupLabel(text: String, weight: Float) {
 
 /** A single column header cell ("V", "D", "P1", "P2", "P3") in the player statistics table. */
 @Composable
-private fun RowScope.StatsColumnHeader(text: String, weight: Float = STATS_WD_COLUMN_WEIGHT) {
+private fun RowScope.StatsColumnHeader(text: String, weight: Float = STATS_COLUMN_WEIGHT) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall,
@@ -605,7 +629,7 @@ private fun RowScope.StatsColumnHeader(text: String, weight: Float = STATS_WD_CO
 @Composable
 private fun RowScope.StatsColumnValue(
     text: String,
-    weight: Float = STATS_WD_COLUMN_WEIGHT,
+    weight: Float = STATS_COLUMN_WEIGHT,
     emphasized: Boolean = false
 ) {
     Text(
@@ -618,27 +642,6 @@ private fun RowScope.StatsColumnValue(
     )
 }
 
-/**
- * Red vertical rule separating the "Casa" and "Fuera" column groups in the player statistics
- * table. Requires the containing [Row] to use `Modifier.height(IntrinsicSize.Min)` so the
- * divider stretches to the row's own height instead of the whole column.
- */
-@Composable
-private fun RowScope.StatsDivider() {
-    VerticalDivider(
-        modifier = Modifier
-            .padding(horizontal = 6.dp)
-            .fillMaxHeight(),
-        thickness = 1.5.dp,
-        color = Color.Red
-    )
-}
-
-/** Same horizontal footprint as [StatsDivider] but invisible, used to align the group labels. */
-@Composable
-private fun StatsDividerSpace() {
-    Spacer(modifier = Modifier.width(1.5.dp + 12.dp))
-}
 
 @Composable
 private fun StandingSummaryCard(standing: StandingRow) {
