@@ -527,7 +527,7 @@ fun TeamScreen(
                                                     ) {
                                                         VerticalDivider(
                                                             modifier = Modifier.fillMaxHeight(),
-                                                            thickness = 2.dp,
+                                                            thickness = 1.dp,
                                                             color = Color.Red
                                                         )
                                                     }
@@ -591,13 +591,13 @@ private fun SectionTitle(text: String) {
 private const val STATS_JUGADOR_WEIGHT = 3f
 
 /** Uniform weight for every V/D/P1/P2/P3 stat column, so spacing is identical across all of them. */
-private const val STATS_COLUMN_WEIGHT = 0.6f
+private const val STATS_COLUMN_WEIGHT = 0.45f
 
 /** Combined weight of the 5 stat columns within one Casa/Fuera group. */
 private val STATS_GROUP_WEIGHT = 5 * STATS_COLUMN_WEIGHT
 
 /** Fixed-width gap between the Casa and Fuera blocks, where the red divider is drawn. */
-private val STATS_GROUP_GAP = 20.dp
+private val STATS_GROUP_GAP = 12.dp
 
 /** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
 @Composable
