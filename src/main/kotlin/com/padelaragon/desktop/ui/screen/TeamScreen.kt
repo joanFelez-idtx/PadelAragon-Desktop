@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -425,127 +428,110 @@ fun TeamScreen(
                                             ),
                                             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                                         ) {
-                                            Column(
+                                            Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(horizontal = 12.dp, vertical = 10.dp),
-                                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                                    .padding(horizontal = 12.dp, vertical = 10.dp)
                                             ) {
-                                                // Header row
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(vertical = 4.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    verticalArrangement = Arrangement.spacedBy(4.dp)
                                                 ) {
-                                                    Text(
-                                                        text = "Jugador",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(3f)
-                                                    )
-                                                    Text(
-                                                        text = "V",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.7f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "D",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.7f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P1",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P2",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P3",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                }
+                                                    // Group sub-header row (Casa / Fuera)
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Spacer(modifier = Modifier.weight(STATS_JUGADOR_WEIGHT))
+                                                        StatsGroupLabel(text = "Casa", weight = STATS_GROUP_WEIGHT)
+                                                        Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                        StatsGroupLabel(text = "Fuera", weight = STATS_GROUP_WEIGHT)
+                                                    }
 
-                                                HorizontalDivider(
-                                                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                                                )
-
-                                                // Player rows
-                                                uiState.playerStats.forEach { stats ->
+                                                    // Header row
                                                     Row(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
-                                                            .clickable {
-                                                                onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
-                                                            }
-                                                            .padding(vertical = 2.dp),
+                                                            .padding(vertical = 4.dp),
                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
                                                         Text(
-                                                            text = stats.name,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(3f)
+                                                            text = "Jugador",
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            fontWeight = FontWeight.Bold,
+                                                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
+                                                            modifier = Modifier.weight(STATS_JUGADOR_WEIGHT)
                                                         )
-                                                        Text(
-                                                            text = stats.wins.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.7f),
-                                                            textAlign = TextAlign.Center,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
-                                                        Text(
-                                                            text = stats.losses.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.7f),
-                                                            textAlign = TextAlign.Center,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
-                                                        Text(
-                                                            text = stats.pair1Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
-                                                        )
-                                                        Text(
-                                                            text = stats.pair2Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
-                                                        )
-                                                        Text(
-                                                            text = stats.pair3Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
+                                                        StatsColumnHeader("V")
+                                                        StatsColumnHeader("D")
+                                                        StatsColumnHeader("P1")
+                                                        StatsColumnHeader("P2")
+                                                        StatsColumnHeader("P3")
+                                                        Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                        StatsColumnHeader("V")
+                                                        StatsColumnHeader("D")
+                                                        StatsColumnHeader("P1")
+                                                        StatsColumnHeader("P2")
+                                                        StatsColumnHeader("P3")
+                                                    }
+
+                                                    HorizontalDivider(
+                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+                                                    )
+
+                                                    // Player rows
+                                                    uiState.playerStats.forEach { stats ->
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .clickable {
+                                                                    onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
+                                                                }
+                                                                .padding(vertical = 2.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                text = stats.name,
+                                                                style = MaterialTheme.typography.bodySmall,
+                                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                                modifier = Modifier.weight(STATS_JUGADOR_WEIGHT)
+                                                            )
+                                                            StatsColumnValue(stats.home.wins.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.home.losses.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.home.pair1Count.toString())
+                                                            StatsColumnValue(stats.home.pair2Count.toString())
+                                                            StatsColumnValue(stats.home.pair3Count.toString())
+                                                            Spacer(modifier = Modifier.width(STATS_GROUP_GAP))
+                                                            StatsColumnValue(stats.away.wins.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.away.losses.toString(), emphasized = true)
+                                                            StatsColumnValue(stats.away.pair1Count.toString())
+                                                            StatsColumnValue(stats.away.pair2Count.toString())
+                                                            StatsColumnValue(stats.away.pair3Count.toString())
+                                                        }
+                                                    }
+                                                }
+
+                                                // Single continuous red rule separating the Casa/Fuera blocks,
+                                                // overlaid on top of the table so it isn't broken up by the
+                                                // vertical spacing between rows. Its horizontal position is
+                                                // computed with the exact same weights as the columns above,
+                                                // so it lines up with the gap between the two blocks at any
+                                                // card width.
+                                                Row(modifier = Modifier.matchParentSize()) {
+                                                    Spacer(modifier = Modifier.weight(STATS_JUGADOR_WEIGHT + STATS_GROUP_WEIGHT))
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .width(STATS_GROUP_GAP)
+                                                            .fillMaxHeight(),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        VerticalDivider(
+                                                            modifier = Modifier.fillMaxHeight(),
+                                                            thickness = 1.dp,
+                                                            color = Color.Red
                                                         )
                                                     }
+                                                    Spacer(modifier = Modifier.weight(STATS_GROUP_WEIGHT))
                                                 }
                                             }
                                         }
@@ -600,6 +586,62 @@ private fun SectionTitle(text: String) {
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
     )
 }
+
+/** Weight of the "Jugador" (player name) column relative to the stat columns. */
+private const val STATS_JUGADOR_WEIGHT = 3f
+
+/** Uniform weight for every V/D/P1/P2/P3 stat column, so spacing is identical across all of them. */
+private const val STATS_COLUMN_WEIGHT = 0.35f
+
+/** Combined weight of the 5 stat columns within one Casa/Fuera group. */
+private val STATS_GROUP_WEIGHT = 5 * STATS_COLUMN_WEIGHT
+
+/** Fixed-width gap between the Casa and Fuera blocks, where the red divider is drawn. */
+private val STATS_GROUP_GAP = 24.dp
+
+/** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
+@Composable
+private fun RowScope.StatsGroupLabel(text: String, weight: Float) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.5f),
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center
+    )
+}
+
+/** A single column header cell ("V", "D", "P1", "P2", "P3") in the player statistics table. */
+@Composable
+private fun RowScope.StatsColumnHeader(text: String, weight: Float = STATS_COLUMN_WEIGHT) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center
+    )
+}
+
+/** A single value cell in the player statistics table. */
+@Composable
+private fun RowScope.StatsColumnValue(
+    text: String,
+    weight: Float = STATS_COLUMN_WEIGHT,
+    emphasized: Boolean = false
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center,
+        fontWeight = if (emphasized) FontWeight.Medium else FontWeight.Normal
+    )
+}
+
 
 @Composable
 private fun StandingSummaryCard(standing: StandingRow) {

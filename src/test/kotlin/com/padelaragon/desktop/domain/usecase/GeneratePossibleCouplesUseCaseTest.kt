@@ -44,13 +44,13 @@ class GeneratePossibleCouplesUseCaseTest {
     @Test
     fun `finds a valid femenina combination`() {
         val players = listOf(
-            AgedPlayer("A", 40), AgedPlayer("B", 40), // 80
-            AgedPlayer("C", 42), AgedPlayer("D", 43), // 85
-            AgedPlayer("E", 45), AgedPlayer("F", 45)  // 90
+            AgedPlayer("A", 42), AgedPlayer("B", 43), // 85
+            AgedPlayer("C", 44), AgedPlayer("D", 46), // 90
+            AgedPlayer("E", 47), AgedPlayer("F", 48)  // 95
         )
         val result = useCase(players, Gender.FEMENINA) as GeneratePossibleCouplesUseCase.Result.Success
         assertTrue(result.combinations.isNotEmpty())
-        assertEquals(listOf(80, 85, 90), result.combinations.first().pairs.map { it.ageSum })
+        assertEquals(listOf(85, 90, 95), result.combinations.first().pairs.map { it.ageSum })
     }
 
     @Test
