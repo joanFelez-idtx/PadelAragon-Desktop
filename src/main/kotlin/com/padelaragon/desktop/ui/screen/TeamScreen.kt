@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -38,6 +39,7 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,6 +50,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -434,18 +437,22 @@ fun TeamScreen(
                                             ) {
                                                 // Group sub-header row (Casa / Fuera)
                                                 Row(
-                                                    modifier = Modifier.fillMaxWidth(),
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(IntrinsicSize.Min),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
                                                     Spacer(modifier = Modifier.weight(3f))
-                                                    StatsGroupLabel(text = "Casa", weight = 3.4f)
-                                                    StatsGroupLabel(text = "Fuera", weight = 3.4f)
+                                                    StatsGroupLabel(text = "Casa", weight = STATS_GROUP_WEIGHT)
+                                                    StatsDividerSpace()
+                                                    StatsGroupLabel(text = "Fuera", weight = STATS_GROUP_WEIGHT)
                                                 }
 
                                                 // Header row
                                                 Row(
                                                     modifier = Modifier
                                                         .fillMaxWidth()
+                                                        .height(IntrinsicSize.Min)
                                                         .padding(vertical = 4.dp),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
@@ -458,14 +465,15 @@ fun TeamScreen(
                                                     )
                                                     StatsColumnHeader("V")
                                                     StatsColumnHeader("D")
-                                                    StatsColumnHeader("P1", weight = 0.5f)
-                                                    StatsColumnHeader("P2", weight = 0.5f)
-                                                    StatsColumnHeader("P3", weight = 0.5f)
+                                                    StatsColumnHeader("P1", weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                    StatsColumnHeader("P2", weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                    StatsColumnHeader("P3", weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                    StatsDivider()
                                                     StatsColumnHeader("V")
                                                     StatsColumnHeader("D")
-                                                    StatsColumnHeader("P1", weight = 0.5f)
-                                                    StatsColumnHeader("P2", weight = 0.5f)
-                                                    StatsColumnHeader("P3", weight = 0.5f)
+                                                    StatsColumnHeader("P1", weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                    StatsColumnHeader("P2", weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                    StatsColumnHeader("P3", weight = STATS_PAREJA_COLUMN_WEIGHT)
                                                 }
 
                                                 HorizontalDivider(
@@ -477,6 +485,7 @@ fun TeamScreen(
                                                     Row(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
+                                                            .height(IntrinsicSize.Min)
                                                             .clickable {
                                                                 onPlayerClick(stats.name, uiState.matchDetails, playedMatches)
                                                             }
@@ -491,14 +500,15 @@ fun TeamScreen(
                                                         )
                                                         StatsColumnValue(stats.home.wins.toString(), emphasized = true)
                                                         StatsColumnValue(stats.home.losses.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.home.pair1Count.toString(), weight = 0.5f)
-                                                        StatsColumnValue(stats.home.pair2Count.toString(), weight = 0.5f)
-                                                        StatsColumnValue(stats.home.pair3Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.home.pair1Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsColumnValue(stats.home.pair2Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsColumnValue(stats.home.pair3Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsDivider()
                                                         StatsColumnValue(stats.away.wins.toString(), emphasized = true)
                                                         StatsColumnValue(stats.away.losses.toString(), emphasized = true)
-                                                        StatsColumnValue(stats.away.pair1Count.toString(), weight = 0.5f)
-                                                        StatsColumnValue(stats.away.pair2Count.toString(), weight = 0.5f)
-                                                        StatsColumnValue(stats.away.pair3Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.away.pair1Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsColumnValue(stats.away.pair2Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
+                                                        StatsColumnValue(stats.away.pair3Count.toString(), weight = STATS_PAREJA_COLUMN_WEIGHT)
                                                     }
                                                 }
                                             }
@@ -555,6 +565,16 @@ private fun SectionTitle(text: String) {
     )
 }
 
+/**
+ * Combined weight of the 5 V/D/P1/P2/P3 columns within one Casa/Fuera group
+ * (2 x [STATS_WD_COLUMN_WEIGHT] + 3 x [STATS_PAREJA_COLUMN_WEIGHT]), used to align the
+ * "Casa"/"Fuera" group label with the columns beneath it.
+ */
+private const val STATS_WD_COLUMN_WEIGHT = 0.6f
+private const val STATS_PAREJA_COLUMN_WEIGHT = 0.45f
+private val STATS_GROUP_WEIGHT =
+    2 * STATS_WD_COLUMN_WEIGHT + 3 * STATS_PAREJA_COLUMN_WEIGHT
+
 /** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
 @Composable
 private fun RowScope.StatsGroupLabel(text: String, weight: Float) {
@@ -570,7 +590,7 @@ private fun RowScope.StatsGroupLabel(text: String, weight: Float) {
 
 /** A single column header cell ("V", "D", "P1", "P2", "P3") in the player statistics table. */
 @Composable
-private fun RowScope.StatsColumnHeader(text: String, weight: Float = 0.7f) {
+private fun RowScope.StatsColumnHeader(text: String, weight: Float = STATS_WD_COLUMN_WEIGHT) {
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall,
@@ -583,7 +603,11 @@ private fun RowScope.StatsColumnHeader(text: String, weight: Float = 0.7f) {
 
 /** A single value cell in the player statistics table. */
 @Composable
-private fun RowScope.StatsColumnValue(text: String, weight: Float = 0.7f, emphasized: Boolean = false) {
+private fun RowScope.StatsColumnValue(
+    text: String,
+    weight: Float = STATS_WD_COLUMN_WEIGHT,
+    emphasized: Boolean = false
+) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodySmall,
@@ -592,6 +616,28 @@ private fun RowScope.StatsColumnValue(text: String, weight: Float = 0.7f, emphas
         textAlign = TextAlign.Center,
         fontWeight = if (emphasized) FontWeight.Medium else FontWeight.Normal
     )
+}
+
+/**
+ * Red vertical rule separating the "Casa" and "Fuera" column groups in the player statistics
+ * table. Requires the containing [Row] to use `Modifier.height(IntrinsicSize.Min)` so the
+ * divider stretches to the row's own height instead of the whole column.
+ */
+@Composable
+private fun RowScope.StatsDivider() {
+    VerticalDivider(
+        modifier = Modifier
+            .padding(horizontal = 6.dp)
+            .fillMaxHeight(),
+        thickness = 1.5.dp,
+        color = Color.Red
+    )
+}
+
+/** Same horizontal footprint as [StatsDivider] but invisible, used to align the group labels. */
+@Composable
+private fun StatsDividerSpace() {
+    Spacer(modifier = Modifier.width(1.5.dp + 12.dp))
 }
 
 @Composable
