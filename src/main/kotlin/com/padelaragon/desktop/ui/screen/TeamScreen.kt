@@ -597,7 +597,7 @@ private const val STATS_COLUMN_WEIGHT = 0.35f
 private val STATS_GROUP_WEIGHT = 5 * STATS_COLUMN_WEIGHT
 
 /** Fixed-width gap between the Casa and Fuera blocks, where the red divider is drawn. */
-private val STATS_GROUP_GAP = 12.dp
+private val STATS_GROUP_GAP = 24.dp
 
 /** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
 @Composable
