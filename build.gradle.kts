@@ -1,6 +1,6 @@
 val versionMajor = 2
 val versionMinor = 1
-val versionPatch = 0
+val versionPatch = 1
 
 plugins {
     kotlin("jvm") version "2.3.20"
