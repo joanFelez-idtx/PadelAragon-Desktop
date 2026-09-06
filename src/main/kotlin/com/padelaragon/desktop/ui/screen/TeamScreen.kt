@@ -591,7 +591,7 @@ private fun SectionTitle(text: String) {
 private const val STATS_JUGADOR_WEIGHT = 3f
 
 /** Uniform weight for every V/D/P1/P2/P3 stat column, so spacing is identical across all of them. */
-private const val STATS_COLUMN_WEIGHT = 0.45f
+private const val STATS_COLUMN_WEIGHT = 0.35f
 
 /** Combined weight of the 5 stat columns within one Casa/Fuera group. */
 private val STATS_GROUP_WEIGHT = 5 * STATS_COLUMN_WEIGHT
