@@ -3,6 +3,7 @@ package com.padelaragon.desktop.domain.usecase
 import com.padelaragon.desktop.data.model.MatchDetail
 import com.padelaragon.desktop.data.model.MatchResult
 import com.padelaragon.desktop.data.model.PlayerStats
+import com.padelaragon.desktop.data.model.PlayerStatsSplit
 
 class ComputePlayerStatsUseCase {
     operator fun invoke(
@@ -10,11 +11,16 @@ class ComputePlayerStatsUseCase {
         playedMatches: List<MatchResult>,
         teamId: Int
     ): List<PlayerStats> {
-        data class Accumulator(
+        data class SplitAccumulator(
             var wins: Int = 0,
             var losses: Int = 0,
-            val pairCounts: MutableMap<Int, Int> = mutableMapOf(),
-            var displayName: String = ""
+            val pairCounts: MutableMap<Int, Int> = mutableMapOf()
+        )
+
+        data class Accumulator(
+            var displayName: String = "",
+            val home: SplitAccumulator = SplitAccumulator(),
+            val away: SplitAccumulator = SplitAccumulator()
         )
 
         val statsMap = mutableMapOf<String, Accumulator>()
@@ -43,23 +49,32 @@ class ComputePlayerStatsUseCase {
                     val key = trimmed.lowercase()
 
                     val acc = statsMap.getOrPut(key) { Accumulator(displayName = trimmed) }
-                    if (ourSideWon) acc.wins++ else acc.losses++
-                    acc.pairCounts[pair.pairNumber] = (acc.pairCounts[pair.pairNumber] ?: 0) + 1
+                    val split = if (isLocal) acc.home else acc.away
+                    if (ourSideWon) split.wins++ else split.losses++
+                    split.pairCounts[pair.pairNumber] = (split.pairCounts[pair.pairNumber] ?: 0) + 1
                 }
             }
         }
+
+        fun SplitAccumulator.toSplit() = PlayerStatsSplit(
+            wins = wins,
+            losses = losses,
+            pair1Count = pairCounts[1] ?: 0,
+            pair2Count = pairCounts[2] ?: 0,
+            pair3Count = pairCounts[3] ?: 0
+        )
 
         return statsMap.values
             .map {
                 PlayerStats(
                     name = it.displayName,
-                    wins = it.wins,
-                    losses = it.losses,
-                    pair1Count = it.pairCounts[1] ?: 0,
-                    pair2Count = it.pairCounts[2] ?: 0,
-                    pair3Count = it.pairCounts[3] ?: 0
+                    home = it.home.toSplit(),
+                    away = it.away.toSplit()
                 )
             }
-            .sortedWith(compareByDescending<PlayerStats> { it.wins }.thenBy { it.losses })
+            .sortedWith(
+                compareByDescending<PlayerStats> { it.home.wins + it.away.wins }
+                    .thenBy { it.home.losses + it.away.losses }
+            )
     }
 }

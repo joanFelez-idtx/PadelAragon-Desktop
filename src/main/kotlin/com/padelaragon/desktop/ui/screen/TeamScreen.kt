@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -431,6 +432,16 @@ fun TeamScreen(
                                                     .padding(horizontal = 12.dp, vertical = 10.dp),
                                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                                             ) {
+                                                // Group sub-header row (Casa / Fuera)
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Spacer(modifier = Modifier.weight(3f))
+                                                    StatsGroupLabel(text = "Casa", weight = 3.4f)
+                                                    StatsGroupLabel(text = "Fuera", weight = 3.4f)
+                                                }
+
                                                 // Header row
                                                 Row(
                                                     modifier = Modifier
@@ -445,46 +456,16 @@ fun TeamScreen(
                                                         color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
                                                         modifier = Modifier.weight(3f)
                                                     )
-                                                    Text(
-                                                        text = "V",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.7f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "D",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.7f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P1",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P2",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
-                                                    Text(
-                                                        text = "P3",
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                                                        modifier = Modifier.weight(0.5f),
-                                                        textAlign = TextAlign.Center
-                                                    )
+                                                    StatsColumnHeader("V")
+                                                    StatsColumnHeader("D")
+                                                    StatsColumnHeader("P1", weight = 0.5f)
+                                                    StatsColumnHeader("P2", weight = 0.5f)
+                                                    StatsColumnHeader("P3", weight = 0.5f)
+                                                    StatsColumnHeader("V")
+                                                    StatsColumnHeader("D")
+                                                    StatsColumnHeader("P1", weight = 0.5f)
+                                                    StatsColumnHeader("P2", weight = 0.5f)
+                                                    StatsColumnHeader("P3", weight = 0.5f)
                                                 }
 
                                                 HorizontalDivider(
@@ -508,43 +489,16 @@ fun TeamScreen(
                                                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                             modifier = Modifier.weight(3f)
                                                         )
-                                                        Text(
-                                                            text = stats.wins.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.7f),
-                                                            textAlign = TextAlign.Center,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
-                                                        Text(
-                                                            text = stats.losses.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.7f),
-                                                            textAlign = TextAlign.Center,
-                                                            fontWeight = FontWeight.Medium
-                                                        )
-                                                        Text(
-                                                            text = stats.pair1Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
-                                                        )
-                                                        Text(
-                                                            text = stats.pair2Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
-                                                        )
-                                                        Text(
-                                                            text = stats.pair3Count.toString(),
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                            modifier = Modifier.weight(0.5f),
-                                                            textAlign = TextAlign.Center
-                                                        )
+                                                        StatsColumnValue(stats.home.wins.toString(), emphasized = true)
+                                                        StatsColumnValue(stats.home.losses.toString(), emphasized = true)
+                                                        StatsColumnValue(stats.home.pair1Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.home.pair2Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.home.pair3Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.away.wins.toString(), emphasized = true)
+                                                        StatsColumnValue(stats.away.losses.toString(), emphasized = true)
+                                                        StatsColumnValue(stats.away.pair1Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.away.pair2Count.toString(), weight = 0.5f)
+                                                        StatsColumnValue(stats.away.pair3Count.toString(), weight = 0.5f)
                                                     }
                                                 }
                                             }
@@ -598,6 +552,45 @@ private fun SectionTitle(text: String) {
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+    )
+}
+
+/** Group sub-header ("Casa" / "Fuera") spanning the 5 V/D/P1/P2/P3 columns beneath it. */
+@Composable
+private fun RowScope.StatsGroupLabel(text: String, weight: Float) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.5f),
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center
+    )
+}
+
+/** A single column header cell ("V", "D", "P1", "P2", "P3") in the player statistics table. */
+@Composable
+private fun RowScope.StatsColumnHeader(text: String, weight: Float = 0.7f) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center
+    )
+}
+
+/** A single value cell in the player statistics table. */
+@Composable
+private fun RowScope.StatsColumnValue(text: String, weight: Float = 0.7f, emphasized: Boolean = false) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        modifier = Modifier.weight(weight),
+        textAlign = TextAlign.Center,
+        fontWeight = if (emphasized) FontWeight.Medium else FontWeight.Normal
     )
 }
 

@@ -34,7 +34,7 @@ data class CoupleCombination(
  * its tier, per the following rules (age-sum thresholds, in ascending order):
  *
  * - Masculina: Pareja 1 >= 95, Pareja 2 >= 100, Pareja 3 >= 105
- * - Femenina:  Pareja 1 >= 80, Pareja 2 >= 85,  Pareja 3 >= 90
+ * - Femenina:  Pareja 1 >= 85, Pareja 2 >= 90,  Pareja 3 >= 95
  *
  * This is meant to answer "given the players I actually have available, what lineups can I
  * field?" — so it does not require the selection to be exactly 6 players; any 6 of the selected
@@ -52,7 +52,7 @@ class GeneratePossibleCouplesUseCase(
 ) {
     companion object {
         val MASCULINA_THRESHOLDS = listOf(95, 100, 105)
-        val FEMENINA_THRESHOLDS = listOf(80, 85, 90)
+        val FEMENINA_THRESHOLDS = listOf(85, 90, 95)
         const val MIN_REQUIRED_PLAYERS = 6
     }
 
