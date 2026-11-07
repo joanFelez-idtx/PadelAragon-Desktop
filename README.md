@@ -1,3 +1,6 @@
+> **Desarrollo trasladado / Development moved:** esta aplicación ahora se desarrolla en <https://github.com/JoanFelez/PadelAragon> (app unificada 3.0.0 para Android y escritorio). Las instalaciones existentes se actualizan en el sitio con el nuevo instalador.
+> Development of PadelAragon has moved to <https://github.com/JoanFelez/PadelAragon> (3.0.0 unified app; existing installs upgrade in place with the new installer).
+
 # PadelAragon Desktop
 
 Windows/Linux/macOS desktop port of [PadelAragon](https://github.com/JoanFelez/PadelAragon), built with
