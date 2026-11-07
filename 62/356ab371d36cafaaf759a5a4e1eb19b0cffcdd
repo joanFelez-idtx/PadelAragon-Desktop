@@ -1,0 +1,19 @@
+README.md
+  s_0479c1b42a8563::t_cfad2dd93bd066 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "62356ab371d36cafaaf759a5a4e1eb19b0cffcdd",
+  "prompts": {},
+  "sessions": {
+    "s_0479c1b42a8563": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "de196680-3727-4764-90a1-901eae080e0c",
+        "model": "unknown"
+      },
+      "human_author": "Joan Felez Albero <joanfa@ext.zara.com>"
+    }
+  }
+}
